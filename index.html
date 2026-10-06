@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ManttUx</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #D30617;          
+      --primary-light: #E52332;    
+      --secondary: #0050A0;        
+      --secondary-light: #1A69B8;  
+      --accent: #F4C430;           
+      --accent-dark: #D4A017;
+      
+      --success: #27AE60;
+      --success-light: #2ECC71;
+      --danger: #E74C3C;
+      --danger-light: #FF6B6B;
+      --warning: #E67E22;
+      --info: #0050A0;
+      --info-light: #2980B9;
+      
+      --bg-dark: #F4F6F9;          
+      --bg-card: #FFFFFF;          
+      --bg-input: #F8FAFC;         
+      --text-primary: #1E293B;     
+      --text-secondary: #64748B;   
+      --text-muted: #94A3B8;
+      
+      --border: #E2E8F0;           
+      --border-light: #F1F5F9;     
+      --border-focus: #1A69B8;     
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.03);
+      --shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+      --shadow-md: 0 8px 20px -4px rgba(15, 23, 42, 0.08);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-xs: 6px;
+    }
+
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .bg-pattern { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      z-index: 0; 
+      pointer-events: none; 
+      background: radial-gradient(ellipse at 10% 20%, rgba(211, 6, 23, 0.04) 0%, transparent 40%),
+                  radial-gradient(ellipse at 90% 80%, rgba(0, 80, 160, 0.04) 0%, transparent 40%), var(--bg-dark); 
+    }
+    
+    .login-container { 
+      position: fixed; 
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 100; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 16px; 
+    }
+
+    .login-box { 
+      background: var(--bg-card); 
+      border: 1px solid var(--border); 
+      border-radius: var(--radius); 
+      padding: 28px 20px; 
+      width: 100%; 
+      max-width: 400px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .login-logo { text-align: center; margin-bottom: 20px; }
+    
+    .login-logo .logo-icon, .nav-brand .brand-icon { 
+      width: 42px; 
+      height: 42px; 
+      background: var(--primary); 
+      border-radius: 10px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin: 0 auto 10px; 
+      padding: 5px;
+      box-shadow: 0 4px 10px rgba(211, 6, 23, 0.25);
+    }
+    
+    .nav-brand .brand-icon {
+      margin: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .login-logo h1 { font-size: 22px; font-weight: 800; color: var(--text-primary); }
+    .login-logo p { font-size: 11px; color: var(--text-secondary); }
+    
+    .form-group { margin-bottom: 14px; position: relative; }
+    .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; }
+    .input-wrapper { position: relative; }
+    .input-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+    .input-wrapper input { width: 100%; padding: 12px 14px 12px 40px; background: var(--bg-input); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 14px; outline: none; }
+    
+    .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border: none; border-radius: var(--radius-sm); color: white; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(211, 6, 23, 0.2); }
+    .login-error { background: #FEE2E2; border: 1px solid #FCA5A5; color: #DC2626; padding: 10px 14px; border-radius: var(--radius-xs); font-size: 12px; margin-bottom: 14px; display: none; align-items: center; gap: 8px; }
+    
+    .dashboard { display: none; position: relative; z-index: 10; min-height: 100vh; }
+    .top-nav { 
+      background: var(--bg-card); 
+      border-bottom: 1px solid var(--border); 
+      padding: 10px 14px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100; 
+      gap: 10px; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+    }
+    .nav-brand { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .nav-brand h1 { font-size: 15px; font-weight: 700; margin: 0; color: var(--text-primary); }
+    
+    .btn-logout { 
+      background: #FEE2E2; 
+      border: 1px solid #FCA5A5; 
+      color: #DC2626; 
+      padding: 3px 8px; 
+      border-radius: var(--radius-xs); 
+      font-size: 10px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      white-space: nowrap; 
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 4px;
+    }
+    
+    .datetime-container {
+      text-align: center;
+      background: var(--bg-input);
+      padding: 4px 10px;
+      border-radius: var(--radius-xs);
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .clock-time { font-size: 12px; font-weight: 700; color: var(--secondary); letter-spacing: 0.5px; line-height: 1.2; }
+    .clock-date { font-size: 9px; color: var(--text-secondary); text-transform: capitalize; }
+
+    .role-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .role-badge.coordinador { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; }
+    .role-badge.tecnico { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; }
+    .role-badge.contratista { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; }
+
+    @media (max-width: 600px) {
+      .top-nav {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 8px 10px;
+        gap: 6px;
+      }
+      .nav-brand {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+      .datetime-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        padding: 4px 8px;
+      }
+      .clock-time { font-size: 12px; }
+      .clock-date { font-size: 10px; }
+    }
+
+    .main-content { padding: 12px; max-width: 1400px; margin: 0 auto; }
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+    @media (min-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(6, 1fr); }
+    }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; position: relative; overflow: hidden; cursor: pointer; box-shadow: var(--shadow); }
+    .stat-card .stat-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-bottom: 6px; }
+    
+    .stat-card.total-mes .stat-icon { background: #E0F2FE; color: var(--secondary); }
+    .stat-card.abiertos .stat-icon { background: #E0F2FE; color: var(--info-light); }
+    .stat-card.sin-asignar .stat-icon { background: #FEE2E2; color: var(--danger); }
+    .stat-card.en-proceso .stat-icon { background: #FEF3C7; color: var(--accent-dark); }
+    .stat-card.requisicion .stat-icon { background: #F3E8FF; color: #9333EA; }
+    .stat-card.cerrados .stat-icon { background: #DCFCE7; color: var(--success); }
+    
+    .stat-card .stat-number { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+    .stat-card .stat-label { font-size: 9px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
+    
+    .section-header { 
+      position: sticky;
+      top: 56px;
+      z-index: 90;
+      background: rgba(244, 246, 249, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 10px 0;
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+      margin-bottom: 12px; 
+    }
+    .search-bar { width: 100%; position: relative; }
+    .search-bar input { width: 100%; padding: 10px 14px 10px 36px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; color: var(--text-primary); font-size: 13px; box-shadow: var(--shadow); }
+    .search-bar i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    
+    .filter-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; width: 100%; align-items: center; }
+    .filter-tab { padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; color: var(--text-secondary); font-size: 11px; white-space: nowrap; cursor: pointer; font-weight: 500; }
+    .filter-tab.active { background: var(--secondary); color: white; border-color: var(--secondary); }
+    .filter-tab.month-toggle { background: #FEF3C7; color: var(--accent-dark); border-color: #FDE68A; font-weight: 600; }
+    .filter-tab.month-toggle.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .table-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: var(--shadow); }
+    .data-table { width: 100%; min-width: 680px; border-collapse: collapse; }
+    .data-table th, .data-table td { padding: 11px 10px; font-size: 12px; text-align: left; }
+    .data-table thead th { background: #F8FAFC; color: var(--text-secondary); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); font-weight: 700; }
+    .data-table tbody tr { border-bottom: 1px solid var(--border); }
+    .data-table tbody tr:hover { background: #F8FAFC; }
+    
+    .servicio-cell {
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-secondary);
+    }
+
+    .estado-badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+    .estado-badge.sin-asignar { background: #FEE2E2; color: #DC2626; }
+    .estado-badge.en-proceso { background: #FEF3C7; color: #D97706; }
+    .estado-badge.requisicion { background: #E0F2FE; color: #0284C7; }
+    .estado-badge.cerrado { background: #DCFCE7; color: #15803D; }
+    .estado-badge.otra-dependencia { background: #F3E8FF; color: #7E22CE; }
+    .estado-badge.duplicado { background: #F3E8FF; color: #7E22CE; }
+    
+    .btn-action { min-height: 38px; min-width: 38px; padding: 6px 10px; border-radius: var(--radius-xs); font-size: 12px; font-weight: 600; border: 1px solid; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; margin: 2px; touch-action: manipulation; }
+    .btn-assign { background: #FEF3C7; border-color: #FDE68A; color: #D97706; }
+    .btn-supplier { background: #F3E8FF; border-color: #E9D5FF; color: #7E22CE; }
+    .btn-close { background: #DCFCE7; border-color: #BBF7D0; color: #15803D; }
+    .btn-reprogram { background: #E0F2FE; border-color: #BAE6FD; color: #0284C7; }
+    .btn-tracking { background: #F1F5F9; border-color: #E2E8F0; color: #475569; }
+    .btn-refresh { background: #E0F2FE; border-color: #BAE6FD; color: #0284C7; padding: 8px 12px; }
+    .btn-copy { background: #DCFCE7; border-color: #BBF7D0; color: #15803D; }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 12px; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 440px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .modal h2 { font-size: 16px; margin-bottom: 4px; color: var(--text-primary); }
+    .modal-subtitle { font-size: 11px; color: var(--text-secondary); margin-bottom: 14px; }
+    .modal select, .modal input[type="text"], .modal textarea { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); color: var(--text-primary); font-size: 13px; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .modal-actions button { flex: 1; padding: 12px; border-radius: var(--radius-xs); font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+    .btn-modal-confirm { background: var(--primary); color: white; }
+    .btn-modal-cancel { background: transparent; border: 1px solid var(--border) !important; color: var(--text-secondary); }
+
+    .autocomplete-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 180px;
+      overflow-y: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0 0 var(--radius-xs) var(--radius-xs);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+      z-index: 1050;
+      display: none;
+    }
+    .autocomplete-item {
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--text-primary);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: var(--bg-input); color: var(--secondary); font-weight: 600; }
+    .autocomplete-item mark { background-color: #FEF3C7; color: var(--accent-dark); font-weight: 700; padding: 0 2px; border-radius: 2px; }
+
+    .toast-container { position: fixed; bottom: 16px; right: 12px; left: 12px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast { pointer-events: auto; padding: 12px 16px; border-radius: var(--radius-xs); font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 10px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+    .toast-success { border-left: 4px solid var(--success); }
+    .toast-warning { border-left: 4px solid var(--accent-dark); }
+    .toast-error { border-left: 4px solid var(--danger); }
+    .toast-info { border-left: 4px solid var(--secondary); }
+    
+    .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(244, 246, 249, 0.85); z-index: 3000; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 10px; }
+    .loading-overlay.active { display: flex; }
+    .loading-spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 8px;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: var(--radius-sm);
+      }
+
+      .data-table {
+        min-width: 720px;
+      }
+
+      .data-table th, 
+      .data-table td {
+        padding: 8px 6px;
+        font-size: 11px;
+      }
+
+      .data-table th:last-child,
+      .data-table td:last-child {
+        position: sticky;
+        right: 0;
+        background-color: var(--bg-card);
+        z-index: 5;
+        box-shadow: -3px 0 6px rgba(0, 0, 0, 0.06);
+        white-space: nowrap;
+        text-align: center;
+      }
+
+      .btn-action {
+        min-height: 34px;
+        min-width: 34px;
+        padding: 4px 8px;
+        font-size: 11px;
+        margin: 1px;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .data-table {
+        min-width: 100%;
+      }
+      
+      .data-table th:last-child,
+      .data-table td:last-child {
+        position: static;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-pattern"></div>
+  <div class="toast-container" id="toastContainer"></div>
+  
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText" style="font-size:12px; color:var(--text-primary)">Procesando...</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="login-container" id="loginSection">
+    <div class="login-box">
+      <div class="login-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <path d="M 50,12 C 28,32 18,48 18,66 C 18,80 32,88 50,88 C 68,88 82,80 82,66 C 82,53 74,40 68,36 C 72,46 70,56 62,60 C 62,43 50,30 50,12 Z" fill="#FFFFFF"/>
+            <path d="M 50,32 C 38,45 30,55 30,67 C 30,77 38,82 50,82 C 62,82 70,77 70,67 C 70,57 62,49 58,45 C 60,51 58,57 52,60 C 52,47 44,39 50,32 Z" fill="#0050A0"/>
+            <path d="M 50,48 C 43,56 38,62 38,69 C 38,75 43,78 50,78 C 57,78 62,75 62,69 C 62,63 57,57 54,54 C 50,54 46,51 50,48 Z" fill="#D30617"/>
+          </svg>
+        </div>
+        <h1>ManttUx</h1>
+        <p>Pimo Olimpica Sucre - Córdoba</p>
+      </div>
+      
+      <div class="login-error" id="loginError">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="loginErrorMsg"></span>
+      </div>
+      
+      <div class="form-group">
+        <label>Correo Gmail</label>
+        <div class="input-wrapper">
+          <input type="email" id="inputUser" placeholder="ejemplo@gmail.com" autocomplete="off">
+          <i class="fas fa-envelope"></i>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Contraseña</label>
+        <div class="input-wrapper">
+          <input type="password" id="inputPass" placeholder="Contraseña" autocomplete="off">
+          <i class="fas fa-lock"></i>
+        </div>
+      </div>
+      
+      <button class="btn-primary" onclick="login()"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</button>
+    </div>
+  </div>
+  
+  <!-- DASHBOARD -->
+  <div class="dashboard" id="dashboardSection">
+    <nav class="top-nav">
+      <div class="nav-brand">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="brand-icon">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <path d="M 50,12 C 28,32 18,48 18,66 C 18,80 32,88 50,88 C 68,88 82,80 82,66 C 82,53 74,40 68,36 C 72,46 70,56 62,60 C 62,43 50,30 50,12 Z" fill="#FFFFFF"/>
+              <path d="M 50,32 C 38,45 30,55 30,67 C 30,77 38,82 50,82 C 62,82 70,77 70,67 C 70,57 62,49 58,45 C 60,51 58,57 52,60 C 52,47 44,39 50,32 Z" fill="#0050A0"/>
+              <path d="M 50,48 C 43,56 38,62 38,69 C 38,75 43,78 50,78 C 57,78 62,75 62,69 C 62,63 57,57 54,54 C 50,54 46,51 50,48 Z" fill="#D30617"/>
+            </svg>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <h1>ManttUx</h1>
+              <span id="userRoleBadge" class="role-badge"></span>
+            </div>
+            <span id="navUserName" style="font-size: 10px; color: var(--text-secondary); display: block;"></span>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Salir</button>
+      </div>
+
+      <div class="datetime-container">
+        <span id="clockDisplay" class="clock-time">00:00:00</span>
+        <span id="dateDisplay" class="clock-date">---, -- de ---</span>
+      </div>
+    </nav>
+    
+    <div class="main-content">
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card total-mes" onclick="filterByStatus('todos')">
+          <div class="stat-icon"><i class="fas fa-list-ol"></i></div>
+          <div class="stat-number" id="statTotalMes">0</div>
+          <div class="stat-label">Total Carga Mes</div>
+        </div>
+        <div class="stat-card abiertos" onclick="filterByStatus('abiertos')">
+          <div class="stat-icon"><i class="fas fa-folder-open"></i></div>
+          <div class="stat-number" id="statAbiertos">0</div>
+          <div class="stat-label">Abiertos</div>
+        </div>
+        <div class="stat-card sin-asignar" id="statSinAsignarCard" onclick="filterByStatus('Sin asignar')">
+          <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="stat-number" id="statSinAsignar">0</div>
+          <div class="stat-label">Sin Asignar</div>
+        </div>
+        <div class="stat-card en-proceso" onclick="filterByStatus('En Proceso')">
+          <div class="stat-icon"><i class="fas fa-cogs"></i></div>
+          <div class="stat-number" id="statEnProceso">0</div>
+          <div class="stat-label">En Proceso</div>
+        </div>
+        <div class="stat-card requisicion" onclick="filterByStatus('Requisición de materiales')">
+          <div class="stat-icon"><i class="fas fa-box-open"></i></div>
+          <div class="stat-number" id="statRequisicion">0</div>
+          <div class="stat-label">Req. Mat.</div>
+        </div>
+        <div class="stat-card cerrados" onclick="filterByStatus('CERRADO')">
+          <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="stat-number" id="statCerrados">0</div>
+          <div class="stat-label">Cerrados</div>
+        </div>
+      </div>
+      
+      <div class="section-header">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Buscar radicado, tienda..." oninput="filterTableDebounced()">
+        </div>
+        <div style="display:flex; gap:6px; align-items:center; justify-content:space-between;">
+          <div class="filter-tabs">
+            <button class="filter-tab month-toggle active" id="btnFilterMonth" onclick="toggleMonthFilter()"><i class="fas fa-calendar-check"></i> Mes Actual</button>
+            <button class="filter-tab active" onclick="filterByStatus('todos', this)">Todos</button>
+            <button class="filter-tab" id="tabSinAsignar" onclick="filterByStatus('Sin asignar', this)">Sin Asignar</button>
+            <button class="filter-tab" onclick="filterByStatus('En Proceso', this)">En Proceso</button>
+            <button class="filter-tab" onclick="filterByStatus('Requisición de materiales', this)">Req. Mat.</button>
+            <button class="filter-tab" onclick="filterByStatus('CERRADO', this)">Cerrados</button>
+          </div>
+          <button class="btn-action btn-refresh" title="Sincronizar Datos" onclick="refreshData(true)"><i class="fas fa-sync-alt"></i></button>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Tienda</th>
+              <th>Radicado</th>
+              <th>Servicio</th>
+              <th>Estado</th>
+              <th id="colTecnico" style="display:none">Técnico</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="7" style="text-align:center; padding:20px;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- MODAL ASIGNAR TÉCNICO -->
+  <div class="modal-overlay" id="modalAsignar">
+    <div class="modal">
+      <h2><i class="fas fa-user-plus" style="color:var(--secondary)"></i> Asignar Técnico</h2>
+      <p class="modal-subtitle" id="modalAsignarSubtitle"></p>
+      <div class="form-group">
+        <label>Técnico / Contratista / Dependencia</label>
+        <input type="text" id="inputTecnico" placeholder="Escriba para buscar técnico o dependencia..." autocomplete="off" oninput="filtrarCoincidencias('inputTecnico', 'resultsTecnico', listaTecnicosCombinada)">
+        <div id="resultsTecnico" class="autocomplete-results"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal-confirm" id="btnConfirmarAsignar" onclick="confirmarAsignacion()">Asignar</button>
+        <button class="btn-modal-cancel" onclick="cerrarModal('modalAsignar')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ASIGNAR PROVEEDOR -->
+  <div class="modal-overlay" id="modalProveedor">
+    <div class="modal">
+      <h2><i class="fas fa-truck" style="color:var(--secondary)"></i> Asignar Proveedor</h2>
+      <p class="modal-subtitle" id="modalProveedorSubtitle"></p>
+      <div class="form-group">
+        <label>Proveedor (Escriba o Seleccione)</label>
+        <input type="text" id="inputProveedor" placeholder="Escriba para buscar proveedor..." autocomplete="off" oninput="filtrarCoincidencias('inputProveedor', 'resultsProveedor', listaProveedoresCache)">
+        <div id="resultsProveedor" class="autocomplete-results"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal-confirm" onclick="confirmarProveedor()">Asignar Proveedor</button>
+        <button class="btn-modal-cancel" onclick="cerrarModal('modalProveedor')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- MODAL CERRAR -->
+  <div class="modal-overlay" id="modalCerrar">
+    <div class="modal">
+      <h2><i class="fas fa-check-circle" style="color:var(--success)"></i> Cerrar Radicado</h2>
+      <p class="modal-subtitle" id="modalCerrarSubtitle"></p>
+      <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">¿Está seguro de cerrar este radicado? Se registrará el estado y la marca de tiempo.</p>
+      <div class="modal-actions">
+        <button class="btn-modal-confirm" id="btnConfirmarCierre" onclick="confirmarCierre()">Confirmar Cierre</button>
+        <button class="btn-modal-cancel" onclick="cerrarModal('modalCerrar')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- MODAL SEGUIMIENTO Y DETALLE DEL SERVICIO -->
+  <div class="modal-overlay" id="modalSeguimiento">
+    <div class="modal">
+      <h2><i class="fas fa-clipboard-list" style="color:var(--secondary)"></i> Detalle de Seguimiento</h2>
+      <p class="modal-subtitle" id="modalSeguimientoSubtitle"></p>
+      <div id="seguimientoInfo" style="background:var(--bg-input); border-radius:var(--radius-xs); padding:12px; font-size:12px; line-height:1.6; border:1px solid var(--border);"></div>
+      <div class="modal-actions">
+        <button class="btn-action btn-copy" style="flex:1; padding:12px; font-size:13px;" onclick="copiarDetalleSeguimiento()"><i class="fas fa-copy"></i> Copiar Resumen</button>
+        <button class="btn-modal-cancel" style="flex:1;" onclick="cerrarModal('modalSeguimiento')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="api-client.js"></script>
+
+  <script>
+    var BACKEND_URL = "https://script.google.com/macros/s/AKfycbx9bOhLwEys51JdSYCdnSgdGkymzzJQzLx6wygaJ7VUWeUqMzScCr2TevMm2XpDjmwcuA/exec"; 
+
+    var currentUser = null;
+    var allData = [];
+    var currentFilter = 'todos';
+    var filterOnlyCurrentMonth = true;
+    var selectedFila = null;
+    var selectedRadicado = null;
+    var searchTimeout = null;
+    var temporizadorSincro = null;
+    var clockInterval = null;
+    var ultimoTimestampConocido = 0;
+    var cantidadRadicadosPrevios = -1;
+
+    var listaTecnicosCache = [];
+    var listaProveedoresCache = [];
+    var listaTecnicosCombinada = [];
+
+    var dependenciasEspecialesLista = [
+      "SERVICIO DUPLICADO",
+      "SOLICITAR CON DPTO DE ANTIOQUIA",
+      "SOLICITAR CON DPTO. DE CALIDAD",
+      "SOLICITAR CON DPTO. DE PROYECTOS",
+      "SOLICITAR CON DPTO. DE PUBLICIDAD",
+      "SOLICITAR CON SERVICIOS GENERALES",
+      "SOLICTAR A SISTEMAS O MESA DE AYUDA"
+    ];
+
+    async function callBackend(action, params = {}) {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        return new Promise((resolve, reject) => {
+          var runner = google.script.run
+            .withSuccessHandler(function(res) { resolve(res); })
+            .withFailureHandler(function(err) { reject(err); });
+          
+          if (typeof runner[action] === 'function') {
+            var args = Object.values(params);
+            runner[action](...args);
+          } else {
+            reject(new Error("Función no definida en google.script.run: " + action));
+          }
+        });
+      } else {
+        try {
+          const response = await fetch(BACKEND_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: action, ...params })
+          });
+          return await response.json();
+        } catch (error) {
+          throw new Error("Error de conexión con el servidor: " + error.message);
+        }
+      }
+    }
+
+    function esDispositivoMovil() {
+      return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    function solicitarPermisoNotificaciones() {
+      if (esDispositivoMovil() && 'Notification' in window) {
+        if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+          Notification.requestPermission();
+        }
+      }
+    }
+
+    function enviarNotificacionMovil(titulo, mensaje) {
+      if (esDispositivoMovil() && 'Notification' in window && Notification.permission === 'granted') {
+        var opciones = {
+          body: mensaje,
+          icon: 'https://cdn-icons-png.flaticon.com/512/3119/3119338.png',
+          vibrate: [200, 100, 200],
+          tag: 'asignacion-servicios'
+        };
+        new Notification(titulo, opciones);
+      }
+    }
+    
+    function startClock() {
+      function updateClock() {
+        var now = new Date();
+        var timeStr = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        var dateStr = now.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short'});
+
+        document.getElementById('clockDisplay').textContent = timeStr;
+        document.getElementById('dateDisplay').textContent = dateStr;
+      }
+      updateClock();
+      if (clockInterval) clearInterval(clockInterval);
+      clockInterval = setInterval(updateClock, 1000);
+    }
+
+    async function login() {
+      var email = document.getElementById('inputUser').value.trim();
+      var clave = document.getElementById('inputPass').value.trim();
+      if (!email || !clave) { showLoginError('Complete todos los campos'); return; }
+      showLoading('Autenticando...');
+      
+      try {
+        var result = await callBackend('autenticarUsuario', { email: email, clave: clave });
+        hideLoading();
+        if (result && result.exito) {
+          currentUser = result;
+
+          if (typeof registrarNotificacionesPush === 'function') {
+            registrarNotificacionesPush(email);
+          }
+
+          document.getElementById('loginSection').style.display = 'none';
+          document.getElementById('dashboardSection').style.display = 'block';
+          document.body.style.overflowY = 'auto';
+          initDashboard();
+        } else {
+          showLoginError(result ? result.mensaje : 'Respuesta inválida del servidor');
+        }
+      } catch (err) {
+        hideLoading();
+        showLoginError('Error: ' + err.message);
+      }
+    }
+    
+    function showLoginError(msg) {
+      document.getElementById('loginErrorMsg').textContent = msg;
+      document.getElementById('loginError').style.display = 'flex';
+    }
+    
+    function logout() {
+      if (temporizadorSincro) clearInterval(temporizadorSincro);
+      if (clockInterval) clearInterval(clockInterval);
+      currentUser = null; allData = []; cantidadRadicadosPrevios = -1;
+      document.body.style.overflowY = 'hidden';
+      document.getElementById('dashboardSection').style.display = 'none';
+      document.getElementById('loginSection').style.display = 'flex';
+    }
+    
+    function initDashboard() {
+      document.getElementById('navUserName').textContent = currentUser.nombre;
+      var roleBadge = document.getElementById('userRoleBadge');
+      var isCoordinador = currentUser.rol === 'coordinador';
+      var isContratista = currentUser.rol === 'contratista';
+      
+      if (isCoordinador) {
+        roleBadge.textContent = 'Coordinador';
+        roleBadge.className = 'role-badge coordinador';
+      } else if (isContratista) {
+        roleBadge.textContent = 'Contratista';
+        roleBadge.className = 'role-badge contratista';
+      } else {
+        roleBadge.textContent = 'Técnico';
+        roleBadge.className = 'role-badge tecnico';
+      }
+
+      if (isCoordinador) {
+        document.getElementById('colTecnico').style.display = 'table-cell';
+        document.getElementById('statSinAsignarCard').style.display = 'block';
+        document.getElementById('tabSinAsignar').style.display = 'inline-block';
+      } else {
+        document.getElementById('colTecnico').style.display = 'none';
+        document.getElementById('statSinAsignarCard').style.display = 'none';
+        document.getElementById('tabSinAsignar').style.display = 'none';
+        solicitarPermisoNotificaciones();
+      }
+      
+      startClock();
+      cargarDatalists();
+      refreshData(true);
+      iniciarSincronizacionAuto();
+    }
+
+    async function cargarDatalists() {
+      try {
+        var tecnicos = await callBackend('obtenerTecnicos');
+        listaTecnicosCache = tecnicos || [];
+        listaTecnicosCombinada = dependenciasEspecialesLista.concat(listaTecnicosCache);
+      } catch (e) { console.error(e); }
+
+      try {
+        var proveedores = await callBackend('obtenerProveedores');
+        listaProveedoresCache = proveedores || [];
+        if (listaProveedoresCache.indexOf("SERVICIO DUPLICADO") === -1) {
+          listaProveedoresCache.unshift("SERVICIO DUPLICADO");
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    function filtrarCoincidencias(inputId, containerId, dataList) {
+      var input = document.getElementById(inputId);
+      var container = document.getElementById(containerId);
+      var query = input.value.trim().toLowerCase();
+
+      if (!query) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        return;
+      }
+
+      var matches = dataList.filter(function(item) {
+        return item.toLowerCase().indexOf(query) !== -1;
+      });
+
+      if (matches.length === 0) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        return;
+      }
+
+      var html = '';
+      for (var i = 0; i < matches.length; i++) {
+        var originalText = matches[i];
+        var regex = new RegExp('(' + escapeRegExp(query) + ')', 'gi');
+        var highlighted = originalText.replace(regex, '<mark>$1</mark>');
+
+        html += '<div class="autocomplete-item" onclick="seleccionarCoincidencia(\'' + inputId + '\', \'' + containerId + '\', \'' + escapeJsString(originalText) + '\')">' + highlighted + '</div>';
+      }
+
+      container.innerHTML = html;
+      container.style.display = 'block';
+    }
+
+    function seleccionarCoincidencia(inputId, containerId, valor) {
+      document.getElementById(inputId).value = valor;
+      var container = document.getElementById(containerId);
+      container.style.display = 'none';
+      container.innerHTML = '';
+    }
+
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function escapeJsString(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.form-group')) {
+        var resT = document.getElementById('resultsTecnico');
+        var resP = document.getElementById('resultsProveedor');
+        if (resT) resT.style.display = 'none';
+        if (resP) resP.style.display = 'none';
+      }
+    });
+
+    function iniciarSincronizacionAuto() {
+      if (temporizadorSincro) clearInterval(temporizadorSincro);
+      temporizadorSincro = setInterval(async function() {
+        try {
+          var timestampActual = await callBackend('obtenerUltimaModificacion');
+          if (timestampActual && timestampActual !== ultimoTimestampConocido) {
+            ultimoTimestampConocido = timestampActual;
+            refreshData(false); 
+          }
+        } catch (e) { console.error(e); }
+      }, 3500); 
+    }
+
+    function refrescarTrasAccionInmediata() {
+      ultimoTimestampConocido = new Date().getTime();
+      refreshData(false);
+    }
+    
+    function toggleMonthFilter() {
+      filterOnlyCurrentMonth = !filterOnlyCurrentMonth;
+      var btn = document.getElementById('btnFilterMonth');
+      if (filterOnlyCurrentMonth) {
+        btn.classList.add('active');
+        btn.innerHTML = '<i class="fas fa-calendar-check"></i> Mes Actual';
+      } else {
+        btn.classList.remove('active');
+        btn.innerHTML = '<i class="fas fa-history"></i> Últimos 2 Meses';
+      }
+      refreshData(true);
+    }
+
+    async function refreshData(mostrarCargador) {
+      if (mostrarCargador) showLoading('Cargando...');
+      try {
+        var result = await callBackend('busquedaAutomatica', { soloMesActual: filterOnlyCurrentMonth });
+        if (mostrarCargador) hideLoading();
+        if (result.error) { showToast(result.error, 'error'); return; }
+        
+        allData = result.datos || [];
+        
+        if (currentUser && (currentUser.rol === 'tecnico' || currentUser.rol === 'contratista')) {
+          var misServicios = getRoleFilteredData();
+          if (cantidadRadicadosPrevios !== -1 && misServicios.length > cantidadRadicadosPrevios) {
+            var ultimoRadicado = misServicios[misServicios.length - 1];
+            enviarNotificacionMovil(
+              '¡Nuevo Servicio Asignado!', 
+              'Radicado: ' + ultimoRadicado.radicado + ' - ' + ultimoRadicado.tienda
+            );
+          }
+          cantidadRadicadosPrevios = misServicios.length;
+        }
+
+        updateStats();
+        renderTable();
+        if (mostrarCargador && currentUser) { showToast('Datos actualizados correctamente', 'info'); }
+      } catch (err) {
+        if (mostrarCargador) hideLoading();
+        showToast(err.message, 'error');
+      }
+    }
+    
+    function getRoleFilteredData() {
+      if (currentUser && (currentUser.rol === 'tecnico' || currentUser.rol === 'contratista')) {
+        return allData.filter(function(item) {
+          return item.tecnico && item.tecnico.trim() === currentUser.nombre.trim();
+        });
+      }
+      return allData;
+    }
+    
+    function updateStats() {
+      var filtered = getRoleFilteredData();
+      var totalMes = 0, abiertos = 0, sinAsignar = 0, enProceso = 0, requisicion = 0, cerrados = 0;
+      
+      for (var i = 0; i < filtered.length; i++) {
+        var item = filtered[i];
+        if (item.radicado) {
+          totalMes++;
+          if (item.estado === 'CERRADO' || item.cierre === 'CERRADO' || item.estado === 'SERVICIO DUPLICADO') cerrados++;
+          else {
+            abiertos++;
+            if (item.estado === 'Sin asignar') sinAsignar++;
+            else if (item.estado === 'En Proceso') enProceso++;
+            else if (item.estado === 'Requisición de materiales') requisicion++;
+          }
+        }
+      }
+      document.getElementById('statTotalMes').textContent = totalMes;
+      document.getElementById('statAbiertos').textContent = abiertos;
+      document.getElementById('statSinAsignar').textContent = sinAsignar;
+      document.getElementById('statEnProceso').textContent = enProceso;
+      document.getElementById('statRequisicion').textContent = requisicion;
+      document.getElementById('statCerrados').textContent = cerrados;
+    }
+    
+    function renderTable() {
+      var tbody = document.getElementById('tableBody');
+      var filtered = getFilteredData();
+      
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">Sin registros</td></tr>';
+        return;
+      }
+      
+      var html = '';
+      var isCoordinador = currentUser && currentUser.rol === 'coordinador';
+      var isTecnicoOContratista = currentUser && (currentUser.rol === 'tecnico' || currentUser.rol === 'contratista');
+      
+      for (var i = 0; i < filtered.length; i++) {
+        var item = filtered[i];
+        var rad = escapeHtml(item.radicado);
+        var esRequisicion = item.estado === 'Requisición de materiales';
+        var estaCerrado = item.estado === 'CERRADO' || item.cierre === 'CERRADO' || item.estado === 'SERVICIO DUPLICADO';
+        
+        html += '<tr>';
+        html += '<td>' + item.fecha + '</td>';
+        html += '<td>' + escapeHtml(item.tienda) + '</td>';
+        html += '<td><strong>' + rad + '</strong></td>';
+        html += '<td class="servicio-cell" title="' + escapeHtml(item.servicio) + '">' + escapeHtml(item.servicio) + '</td>';
+        html += '<td><span class="estado-badge ' + getEstadoClass(item.estado) + '">' + escapeHtml(item.estado) + '</span></td>';
+        
+        if (isCoordinador) {
+          html += '<td style="font-size:11px; color:var(--secondary)">' + escapeHtml(item.tecnico || '—') + '</td>';
+        }
+        
+        html += '<td>';
+        if (isCoordinador) {
+          if (!estaCerrado) {
+            html += '<button class="btn-action btn-assign" title="Asignar Técnico/Dependencia" onclick="abrirModalAsignar(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-user-plus"></i></button>';
+            if (esRequisicion) {
+              html += '<button class="btn-action btn-supplier" title="Asignar Proveedor" onclick="abrirModalProveedor(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-truck"></i></button>';
+            }
+            html += '<button class="btn-action btn-tracking" title="Ver Detalle / Servicio" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-search"></i></button>';
+            html += '<button class="btn-action btn-close" title="Cerrar Radicado" onclick="cerrarRadicadoCoordinador(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-times-circle"></i></button>';
+          } else {
+            html += '<button class="btn-action btn-tracking" title="Ver Detalle / Servicio" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-search"></i></button>';
+            html += '<button class="btn-action btn-reprogram" title="Reabrir Radicado" onclick="reabrirRadicadoJS(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-lock-open"></i> Reabrir</button>';
+          }
+        }
+        if (isTecnicoOContratista) {
+          if (!estaCerrado) {
+            html += '<button class="btn-action btn-close" onclick="abrirModalCerrar(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-check-circle"></i> Cerrar</button>';
+          }
+          html += '<button class="btn-action btn-tracking" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-box-open"></i> Ver Servicio</button>';
+        }
+        html += '</td></tr>';
+      }
+      tbody.innerHTML = html;
+    }
+    
+    function filterTableDebounced() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(async function() {
+        var searchTerm = document.getElementById('searchInput').value.trim();
+        var filteredLocal = getFilteredData();
+
+        if (filteredLocal.length === 0 && searchTerm.length >= 3) {
+          try {
+            var res = await callBackend('buscarRadicadoGlobal', { término: searchTerm });
+            if (res && res.hallado && res.item) {
+              var existe = allData.some(function(d) { return String(d.radicado) === String(res.item.radicado); });
+              if (!existe) allData.push(res.item);
+              renderTable();
+            } else {
+              renderTable();
+            }
+          } catch (e) {
+            renderTable();
+          }
+        } else {
+          renderTable();
+        }
+      }, 300);
+    }
+
+    function getFilteredData() {
+      var filtered = getRoleFilteredData();
+      var searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      if (currentFilter === 'abiertos') filtered = filtered.filter(function(i) { return i.estado !== 'CERRADO' && i.cierre !== 'CERRADO' && i.estado !== 'SERVICIO DUPLICADO'; });
+      else if (currentFilter !== 'todos') filtered = filtered.filter(function(i) { return i.estado === currentFilter; });
+      
+      if (searchTerm) {
+        filtered = filtered.filter(function(i) {
+          return i.radicado.toLowerCase().indexOf(searchTerm) !== -1 || i.tienda.toLowerCase().indexOf(searchTerm) !== -1;
+        });
+      }
+      return filtered;
+    }
+    
+    function getEstadoClass(e) {
+      if (e === 'Sin asignar') return 'sin-asignar';
+      if (e === 'En Proceso') return 'en-proceso';
+      if (e === 'Requisición de materiales') return 'requisicion';
+      if (e === 'CERRADO') return 'cerrado';
+      if (e === 'Otra dependencia') return 'otra-dependencia';
+      if (e === 'SERVICIO DUPLICADO') return 'duplicado';
+      return 'sin-asignar';
+    }
+    
+    function escapeHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g, "&#39;"); }
+    
+    function filterByStatus(s, btnElem) {
+      currentFilter = s;
+      var tabs = document.querySelectorAll('.filter-tab:not(.month-toggle)');
+      for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+      if (btnElem) btnElem.classList.add('active');
+      renderTable();
+    }
+
+    function abrirModalAsignar(f, r) {
+      selectedFila = f; selectedRadicado = r;
+      document.getElementById('modalAsignarSubtitle').textContent = 'Radicado: ' + r;
+      document.getElementById('inputTecnico').value = '';
+      document.getElementById('resultsTecnico').style.display = 'none';
+      document.getElementById('modalAsignar').classList.add('active');
+    }
+    
+    async function confirmarAsignacion() {
+      var t = document.getElementById('inputTecnico').value.trim();
+      if (!t) { showToast('Escriba o seleccione un técnico/dependencia', 'warning'); return; }
+        
+      cerrarModal('modalAsignar');
+      showLoading('Guardando asignación...');
+        
+      try {
+        var res = await callBackend('asignarRadicado', { fila: selectedFila, tecnico: t });
+        hideLoading();
+        showToast(res.mensaje, res.exito ? 'success' : 'warning');
+        refrescarTrasAccionInmediata();
+      } catch (err) {
+        hideLoading();
+        showToast('Error al guardar: ' + err.message, 'error');
+        refrescarTrasAccionInmediata();
+      }
+    }
+
+    function abrirModalProveedor(f, r) {
+      selectedFila = f; selectedRadicado = r;
+      document.getElementById('modalProveedorSubtitle').textContent = 'Radicado: ' + r;
+      document.getElementById('inputProveedor').value = '';
+      document.getElementById('resultsProveedor').style.display = 'none';
+      document.getElementById('modalProveedor').classList.add('active');
+    }
+
+    async function confirmarProveedor() {
+      var p = document.getElementById('inputProveedor').value.trim();
+      if (!p) { showToast('Escriba o seleccione un proveedor', 'warning'); return; }
+
+      cerrarModal('modalProveedor');
+      showLoading('Asignando proveedor...');
+
+      try {
+        var res = await callBackend('asignarProveedorRadicado', { radicado: selectedRadicado, proveedor: p });
+        hideLoading();
+        showToast(res.mensaje, res.exito ? 'success' : 'warning');
+        refrescarTrasAccionInmediata();
+      } catch (err) {
+        hideLoading();
+        showToast('Error: ' + err.message, 'error');
+        refrescarTrasAccionInmediata();
+      }
+    }
+
+    function abrirModalCerrar(f, r) {
+      selectedFila = f; selectedRadicado = r;
+      document.getElementById('modalCerrarSubtitle').textContent = 'Radicado: ' + r;
+      document.getElementById('modalCerrar').classList.add('active');
+    }
+
+    async function confirmarCierre() {
+      cerrarModal('modalCerrar');
+      showLoading('Verificando y cerrando radicado...');
+        
+      try {
+        var res = await callBackend('cerrarRadicado', { fila: selectedFila });
+        hideLoading();
+        showToast(res.mensaje, res.exito ? 'success' : 'warning');
+        refrescarTrasAccionInmediata();
+      } catch (err) {
+        hideLoading();
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    function cerrarRadicadoCoordinador(f, r) { abrirModalCerrar(f, r); }
+
+    async function reabrirRadicadoJS(f, r) {
+      showLoading('Reabriendo radicado...');
+      try {
+        var res = await callBackend('reabrirRadicado', { fila: f });
+        hideLoading();
+        showToast(res.mensaje, res.exito ? 'success' : 'warning');
+        refrescarTrasAccionInmediata();
+      } catch (err) {
+        hideLoading();
+        showToast('Error: ' + err.message, 'error');
+        refrescarTrasAccionInmediata();
+      }
+    }
+
+    function abrirModalSeguimiento(f, r) {
+      var item = allData.find(function(i) { return String(i.radicado) === String(r); });
+      if (!item) return;
+
+      selectedRadicado = r;
+        
+      document.getElementById('modalSeguimientoSubtitle').textContent = 'Radicado: ' + r;
+      var estaCerrado = (item.cierre === 'CERRADO' || item.estado === 'SERVICIO DUPLICADO');
+      var colorCierre = estaCerrado ? 'var(--success)' : 'var(--accent-dark)';
+      var valTecnico = String(item.tecnico || '').trim();
+
+      var info = '<div style="margin-bottom:8px;"><b><i class="fas fa-hashtag"></i> Radicado:</b> ' + escapeHtml(item.radicado) + '</div>';
+      info += '<div style="margin-bottom:8px;"><b><i class="fas fa-store"></i> Tienda:</b> ' + escapeHtml(item.tienda) + '</div>';
+      info += '<div style="margin-bottom:10px; padding:10px; background:#FFFFFF; border-left:4px solid var(--secondary); border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.05);"><b><i class="fas fa-tools"></i> Descripción del Servicio:</b><br><span style="color:var(--text-primary); font-size:13px; font-weight:500;">' + escapeHtml(item.servicio) + '</span></div>';
+      info += '<div style="margin-bottom:8px;"><b><i class="fas fa-user-gear"></i> Técnico / Contratista:</b> <span style="color:var(--secondary); font-weight:600;">' + escapeHtml(valTecnico || '—') + '</span></div>';
+      info += '<div style="margin-bottom:8px;"><b><i class="fas fa-info-circle"></i> Estado del radicado:</b> <span class="estado-badge ' + getEstadoClass(item.estado) + '">' + escapeHtml(item.estado) + '</span></div>';
+      info += '<div style="margin-bottom:8px; padding-top:6px; border-top:1px solid var(--border);"><b><i class="fas fa-lock"></i> Estado de cierre:</b> <span style="color:' + colorCierre + '; font-weight:700;">' + escapeHtml(item.cierre || 'PENDIENTE') + '</span></div>';
+      info += '<div style="margin-bottom:8px;"><b><i class="fas fa-calendar-check"></i> Fecha de cierre:</b> <span style="color:var(--text-secondary);">' + escapeHtml(item.fechaCierre || 'Sin registrar') + '</span></div>';
+      info += '<div style="margin-top:10px; padding-top:6px; border-top:1px solid var(--border);"><b><i class="fas fa-boxes-stacked"></i> Materiales Solicitados / Proveedores:</b> <br><span style="color:var(--text-secondary); font-weight:500;">' + escapeHtml(item.materiales) + '</span></div>';
+        
+      document.getElementById('seguimientoInfo').innerHTML = info;
+      document.getElementById('modalSeguimiento').classList.add('active');
+    }
+
+    function copiarDetalleSeguimiento() {
+      var item = allData.find(function(i) { return String(i.radicado) === String(selectedRadicado); });
+      if (!item) {
+        showToast('No se encontró la información del radicado', 'error');
+        return;
+      }
+
+      var textoMateriales = String(item.materiales || '').trim();
+      var materialesFormateados = 'Sin solicitudes de materiales';
+
+      if (textoMateriales && textoMateriales !== 'Sin solicitudes de materiales') {
+        var listaMat = textoMateriales.split(/[/|]/);
+        materialesFormateados = listaMat.map(function(m) {
+          return '  - ' + m.trim();
+        }).join('\n');
+      }
+
+      var resumen = '📋 *DETALLE DE SEGUIMIENTO*' + '\n' +
+        '• *Radicado:* ' + (item.radicado || '—') + '\n' +
+        '• *Tienda:* ' + (item.tienda || '—') + '\n' +
+        '• *Descripción del Servicio:* ' + (item.servicio || '—') + '\n' +
+        '• *Técnico / Contratista:* ' + (item.tecnico || '—') + '\n' +
+        '• *Estado del radicado:* ' + (item.estado || '—') + '\n' +
+        '• *Descripción del Material:*\n' + materialesFormateados;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(resumen).then(function() {
+          showToast('¡Información copiada al portapapeles!', 'success');
+        }).catch(function(err) {
+          copiarTextoFallback(resumen);
+        });
+      } else {
+        copiarTextoFallback(resumen);
+      }
+    }
+
+    function copiarTextoFallback(texto) {
+      var areaTexto = document.createElement('textarea');
+      areaTexto.value = texto;
+      areaTexto.style.position = 'fixed';
+      areaTexto.style.left = '-9999px';
+      document.body.appendChild(areaTexto);
+      areaTexto.focus();
+      areaTexto.select();
+      try {
+        document.execCommand('copy');
+        showToast('¡Información copiada al portapapeles!', 'success');
+      } catch (err) {
+        showToast('Error al copiar el texto', 'error');
+      }
+      document.body.removeChild(areaTexto);
+    }
+
+    function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
+      
+    function showToast(m, tipo) {
+      var c = document.getElementById('toastContainer');
+      var div = document.createElement('div'); 
+      var icon = 'fa-info-circle', claseTipo = 'toast-info';
+        
+      if (tipo === 'success') { icon = 'fa-check-circle'; claseTipo = 'toast-success'; }
+      else if (tipo === 'warning') { icon = 'fa-exclamation-triangle'; claseTipo = 'toast-warning'; }
+      else if (tipo === 'error') { icon = 'fa-times-circle'; claseTipo = 'toast-error'; }
+        
+      div.className = 'toast ' + claseTipo; 
+      div.innerHTML = '<i class="fas ' + icon + '"></i> <span>' + escapeHtml(m) + '</span>';
+        
+      c.appendChild(div); 
+      setTimeout(function() { if(div.parentNode) c.removeChild(div); }, 3500);
+    }
+      
+    function showLoading(m) { 
+      document.getElementById('loadingText').textContent = m; 
+      document.getElementById('loadingOverlay').classList.add('active'); 
+    }
+      
+    function hideLoading() { 
+      document.getElementById('loadingOverlay').classList.remove('active'); 
+    }
+  </script>
+</body>
+</html>
