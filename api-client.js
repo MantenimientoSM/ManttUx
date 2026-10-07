@@ -1,5 +1,5 @@
 // Constante obligatoria con la URL de despliegue de Apps Script
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9bOhLwEys51JdSYCdnSgdGkymzzJQzLx6wygaJ7VUWeUqMzScCr2TevMm2XpDjmwcuA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9bOhLwEys51JdSYCdnSgdGkymzzJQzLx6wygaJ7VUWeUqMzScCr2TevMm2XpDjmwcuA/exec/exec";
 
 /**
  * Función central unificada para enviar peticiones POST al backend doPost(e)
