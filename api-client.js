@@ -99,12 +99,12 @@ async function verificarActualizacionesServidor() {
 }
 
 /**
- * Inicia la verificación continua cada 10 segundos
+ * Inicia la verificación continua cada 5 segundos
  */
 function iniciarSincronizacionContinua() {
   if (syncInterval) clearInterval(syncInterval);
   verificarActualizacionesServidor(); // Primera ejecución inmediata
-  syncInterval = setInterval(verificarActualizacionesServidor, 10000);
+  syncInterval = setInterval(verificarActualizacionesServidor, 5000);
 }
 
 /**
@@ -166,7 +166,6 @@ async function mostrarNotificacionLocal(titulo, cuerpo) {
  */
 async function registrarNotificacionesPush(emailUsuario) {
   try {
-    // 1. Detectar si la app corre en un contenedor nativo (Android/iOS)
     const esNativo = window.Capacitor && 
                      typeof window.Capacitor.isNativePlatform === 'function' && 
                      window.Capacitor.isNativePlatform();
@@ -181,14 +180,12 @@ async function registrarNotificacionesPush(emailUsuario) {
       return;
     }
 
-    // 2. Obtener el plugin solo si existe en entorno nativo
     const pushPlugin = getCapacitorPlugin('PushNotifications');
     if (!pushPlugin) {
       console.warn("FCM: Plugin PushNotifications no disponible en Capacitor.");
       return;
     }
 
-    // 3. VERIFICAR Y SOLICITAR PERMISOS PRIMERO
     let permStatus = await pushPlugin.checkPermissions();
 
     if (permStatus.receive === 'prompt') {
@@ -200,7 +197,6 @@ async function registrarNotificacionesPush(emailUsuario) {
       return;
     }
 
-    // 3.1 CREACIÓN DEL CANAL DE NOTIFICACIÓN DE ALTA PRIORIDAD (Para Android 8+)
     try {
       await pushPlugin.createChannel({
         id: 'default',
@@ -216,10 +212,8 @@ async function registrarNotificacionesPush(emailUsuario) {
       console.warn("No se pudo crear el canal de notificación:", errChannel);
     }
 
-    // 4. Limpiar escuchadores previos
     await pushPlugin.removeAllListeners();
 
-    // 5. Configurar escuchadores de eventos FCM
     pushPlugin.addListener('registration', async (token) => {
       console.log("🔥 Token FCM obtenido exitosamente:", token.value);
       localStorage.setItem("fcm_token", token.value);
@@ -257,10 +251,8 @@ async function registrarNotificacionesPush(emailUsuario) {
       console.log("Usuario abrió la notificación:", notification);
     });
 
-    // 6. Solicitar registro a Firebase Cloud Messaging
     await pushPlugin.register();
 
-    // 7. Re-sincronización rápida: enviar token local a Apps Script si ya existía
     const tokenGuardado = localStorage.getItem("fcm_token");
     if (tokenGuardado) {
       console.log("FCM: Re-sincronizando token local existente...");
@@ -293,83 +285,114 @@ function alIniciarSesionExitosa(datosUsuario) {
 }
 
 /* ==========================================================================
-   CONTROL DE NAVEGACIÓN Y BOTÓN ATRÁS (DOBLE TOQUE PARA SALIR)
+   CONTROL DE NAVEGACIÓN, BOTÓN ATRÁS Y CICLO DE VIDA (INTEGRADO)
    ========================================================================== */
 
-let backButtonTapCount = 0;
-let backButtonTimer = null;
-
+/**
+ * Configura el comportamiento del botón Atrás nativo de Android
+ */
 function configurarBotonAtrasNativo() {
   const appPlugin = getCapacitorPlugin('App');
+  if (!appPlugin) return;
 
-  if (appPlugin) {
-    appPlugin.addListener('backButton', ({ canGoBack }) => {
-      const loginCard = document.getElementById('loginSection');
-      const loginVisible = loginCard && window.getComputedStyle(loginCard).display !== 'none';
-
-      // Si el historial de navegación permite retroceder dentro de la app
-      if (canGoBack && !loginVisible && window.history.length > 1) {
-        window.history.back();
+  appPlugin.addListener('backButton', async (data) => {
+    // 1. Cierra un modal si está desplegado
+    const modalAbierto = document.querySelector('.modal.show, .modal[style*="display: block"]');
+    if (modalAbierto) {
+      const btnCerrar = modalAbierto.querySelector('.btn-close, [data-bs-dismiss="modal"]');
+      if (btnCerrar) {
+        btnCerrar.click();
         return;
       }
+    }
 
-      // Si se intenta salir desde la pantalla principal o el login
-      backButtonTapCount++;
+    // 2. Si la sección de login está activa, evita retrocesos descontrolados
+    const loginCard = document.getElementById('loginSection');
+    const loginVisible = loginCard && window.getComputedStyle(loginCard).display !== 'none';
 
-      if (backButtonTapCount === 1) {
-        // Muestra notificación o Toast al usuario pidiendo el segundo toque
-        if (typeof mostrarNotificacionError === 'function') {
-          mostrarNotificacionError("Presiona atrás nuevamente para salir de la aplicación");
-        } else {
-          alert("Presiona atrás nuevamente para salir de la aplicación");
-        }
+    // 3. Permite navegar hacia atrás en el historial si es posible
+    if (data && data.canGoBack && !loginVisible && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
 
-        // Si transcurren 2 segundos sin presionar nuevamente, reinicia el contador
-        backButtonTimer = setTimeout(() => {
-          backButtonTapCount = 0;
-        }, 2000);
+    // 4. Solicitud de confirmación antes de cerrar la aplicación
+    await confirmarSalidaManttUx(appPlugin);
+  });
+}
 
-      } else if (backButtonTapCount >= 2) {
-        clearTimeout(backButtonTimer);
-        backButtonTapCount = 0;
-        // Cierra o minimiza la app de manera limpia
+/**
+ * Muestra ventana emergente de confirmación de salida
+ */
+async function confirmarSalidaManttUx(appPlugin) {
+  try {
+    const dialogPlugin = getCapacitorPlugin('Dialog');
+
+    if (dialogPlugin) {
+      const result = await dialogPlugin.confirm({
+        title: 'Cerrar ManttUx',
+        message: '¿Estás seguro de que deseas salir de la aplicación?',
+        okButtonTitle: 'Sí, Salir',
+        cancelButtonTitle: 'Cancelar'
+      });
+
+      if (result && result.value) {
+        detenerSincronizacionContinua();
         appPlugin.exitApp();
       }
-    });
+    } else {
+      const salir = window.confirm("¿Estás seguro de que deseas salir de ManttUx?");
+      if (salir) {
+        detenerSincronizacionContinua();
+        appPlugin.exitApp();
+      }
+    }
+  } catch (error) {
+    console.error("Error al mostrar confirmación de salida:", error);
   }
 }
 
 /**
- * Escucha los cambios del ciclo de vida de la aplicación en dispositivos móviles
+ * Escucha los cambios del ciclo de vida de la aplicación (Primer y Segundo plano)
  */
 function configurarCicloDeVidaNativo() {
   const appPlugin = getCapacitorPlugin('App');
+
   if (appPlugin) {
     appPlugin.addListener('appStateChange', ({ isActive }) => {
-      if (isActive) {
-        console.log("App en primer plano: Reanudando sincronización continua...");
-        const email = localStorage.getItem("usuario_email");
-        const tokenGuardado = localStorage.getItem("fcm_token");
-
-        if (email && !tokenGuardado) {
-          registrarNotificacionesPush(email);
-        }
-        iniciarSincronizacionContinua();
-      } else {
-        console.log("App en segundo plano: Pausando temporizador de sincronización...");
-        detenerSincronizacionContinua();
-      }
+      gestionarCambioDeEstadoApp(isActive);
     });
   }
 
-  // Soporte para navegación en pestañas web / WebView
+  // Respaldo para visibilidad en navegador/WebView web
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      detenerSincronizacionContinua();
-    } else {
-      iniciarSincronizacionContinua();
-    }
+    gestionarCambioDeEstadoApp(!document.hidden);
   });
+}
+
+/**
+ * Centraliza la lógica de reanudación y pausa de tareas
+ */
+function gestionarCambioDeEstadoApp(isActive) {
+  if (isActive) {
+    console.log("🟢 App en primer plano: Reanudando sincronización y verficiación...");
+    
+    // Restauración de sesión si existe en el entorno global
+    if (typeof verificarYRestaurarSesion === 'function') {
+      verificarYRestaurarSesion();
+    }
+
+    const email = localStorage.getItem("usuario_email");
+    const tokenGuardado = localStorage.getItem("fcm_token");
+
+    if (email && !tokenGuardado) {
+      registrarNotificacionesPush(email);
+    }
+    iniciarSincronizacionContinua();
+  } else {
+    console.log("🟠 App en segundo plano: Pausando temporizadores...");
+    detenerSincronizacionContinua();
+  }
 }
 
 async function capturarEvidenciaFotografica() {
@@ -432,3 +455,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error leyendo sesión guardada al iniciar:", e);
   }
 });
+
