@@ -1154,6 +1154,7 @@
       var valTecnico = String(item.tecnico || '').trim();
 
       var info = '<div style="margin-bottom:8px;"><b><i class="fas fa-hashtag"></i> Radicado:</b> ' + escapeHtml(item.radicado) + '</div>';
+      info += '<div style="margin-bottom:8px;"><b><i class="fas fa-calendar-alt"></i> Fecha de Servicio:</b> ' + escapeHtml(item.fecha || '—') + '</div>';
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-store"></i> Tienda:</b> ' + escapeHtml(item.tienda) + '</div>';
       info += '<div style="margin-bottom:10px; padding:10px; background:#FFFFFF; border-left:4px solid var(--secondary); border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.05);"><b><i class="fas fa-tools"></i> Descripción del Servicio:</b><br><span style="color:var(--text-primary); font-size:13px; font-weight:500;">' + escapeHtml(item.servicio) + '</span></div>';
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-user-gear"></i> Técnico / Contratista:</b> <span style="color:var(--secondary); font-weight:600;">' + escapeHtml(valTecnico || '—') + '</span></div>';
@@ -1183,8 +1184,9 @@
         }).join('\n');
       }
 
-      var resumen = '📋 *DETALLE DE SEGUIMIENTO*' + '\n' +
+      var resumen = '📋 *MANTTUX SEGUIMIENTOS*' + '\n' +
         '• *Radicado:* ' + (item.radicado || '—') + '\n' +
+        '• *Fecha de Servicio:* ' + (item.fecha || '—') + '\n' +
         '• *Tienda:* ' + (item.tienda || '—') + '\n' +
         '• *Descripción del Servicio:* ' + (item.servicio || '—') + '\n' +
         '• *Técnico / Contratista:* ' + (item.tecnico || '—') + '\n' +
