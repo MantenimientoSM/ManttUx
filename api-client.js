@@ -78,15 +78,11 @@ async function verificarActualizacionesServidor() {
   if (!email) return;
 
   try {
-    // Se alineó la acción con la función del backend en Apps Script
-    const res = await callBackend("obtenerUltimaModificacion");
-    
-    if (res && res.timestamp) {
-      const serverTimestamp = String(res.timestamp);
-
-      if (serverTimestamp !== lastSheetsTimestamp) {
+    const res = await callBackend("verificarUltimoCambio");
+    if (res && res.exito && res.timestamp) {
+      if (res.timestamp !== lastSheetsTimestamp) {
         console.log("🔄 Cambio detectado en Google Sheets. Refrescando datos...");
-        lastSheetsTimestamp = serverTimestamp;
+        lastSheetsTimestamp = res.timestamp;
         localStorage.setItem("last_sheets_timestamp", lastSheetsTimestamp);
 
         // Si existe la función de carga/renderizado en la ventana global, se ejecuta silenciosamente
@@ -103,12 +99,12 @@ async function verificarActualizacionesServidor() {
 }
 
 /**
- * Inicia la verificación continua cada 5 segundos
+ * Inicia la verificación continua cada 10 segundos
  */
 function iniciarSincronizacionContinua() {
   if (syncInterval) clearInterval(syncInterval);
   verificarActualizacionesServidor(); // Primera ejecución inmediata
-  syncInterval = setInterval(verificarActualizacionesServidor, 5000);
+  syncInterval = setInterval(verificarActualizacionesServidor, 10000);
 }
 
 /**
