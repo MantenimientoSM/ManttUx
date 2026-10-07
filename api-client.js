@@ -78,11 +78,15 @@ async function verificarActualizacionesServidor() {
   if (!email) return;
 
   try {
-    const res = await callBackend("verificarUltimoCambio");
-    if (res && res.exito && res.timestamp) {
-      if (res.timestamp !== lastSheetsTimestamp) {
+    // Se alineó la acción con la función del backend en Apps Script
+    const res = await callBackend("obtenerUltimaModificacion");
+    
+    if (res && res.timestamp) {
+      const serverTimestamp = String(res.timestamp);
+
+      if (serverTimestamp !== lastSheetsTimestamp) {
         console.log("🔄 Cambio detectado en Google Sheets. Refrescando datos...");
-        lastSheetsTimestamp = res.timestamp;
+        lastSheetsTimestamp = serverTimestamp;
         localStorage.setItem("last_sheets_timestamp", lastSheetsTimestamp);
 
         // Si existe la función de carga/renderizado en la ventana global, se ejecuta silenciosamente
