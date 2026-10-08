@@ -181,36 +181,11 @@
     .role-badge.tecnico { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; }
     .role-badge.contratista { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; }
 
-    @media (max-width: 600px) {
-      .top-nav {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 8px 10px;
-        gap: 6px;
-      }
-      .nav-brand {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-      }
-      .datetime-container {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        padding: 4px 8px;
-      }
-      .clock-time { font-size: 12px; }
-      .clock-date { font-size: 10px; }
-    }
-
     .main-content { padding: 12px; max-width: 1400px; margin: 0 auto; }
-    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-    @media (min-width: 768px) {
-      .stats-grid { grid-template-columns: repeat(6, 1fr); }
-    }
+
+    /* PARTE 1: Tarjetas de estadísticas optimizadas para móviles */
+    .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
+    
     .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; position: relative; overflow: hidden; cursor: pointer; box-shadow: var(--shadow); }
     .stat-card .stat-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-bottom: 6px; }
     
@@ -237,9 +212,13 @@
       gap: 10px; 
       margin-bottom: 12px; 
     }
+
+    /* PARTE 2: Buscador con botón de borrado rápido */
     .search-bar { width: 100%; position: relative; }
-    .search-bar input { width: 100%; padding: 10px 14px 10px 36px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; color: var(--text-primary); font-size: 13px; box-shadow: var(--shadow); }
-    .search-bar i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .search-bar input { width: 100%; padding: 10px 36px 10px 36px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; color: var(--text-primary); font-size: 13px; box-shadow: var(--shadow); }
+    .search-bar .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .search-bar .clear-search { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; display: none; font-size: 14px; padding: 2px 6px; }
+    .search-bar .clear-search:hover { color: var(--primary); }
     
     .filter-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; width: 100%; align-items: center; }
     .filter-tab { padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; color: var(--text-secondary); font-size: 11px; white-space: nowrap; cursor: pointer; font-weight: 500; }
@@ -253,6 +232,20 @@
     .data-table thead th { background: #F8FAFC; color: var(--text-secondary); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); font-weight: 700; }
     .data-table tbody tr { border-bottom: 1px solid var(--border); }
     .data-table tbody tr:hover { background: #F8FAFC; }
+
+    /* PARTE 3: Radicado Clickeable / Enlace interactivo */
+    .radicado-clickable { 
+      color: var(--secondary); 
+      font-weight: 700; 
+      cursor: pointer; 
+      text-decoration: underline; 
+      text-decoration-color: rgba(0, 80, 160, 0.3);
+      transition: all 0.2s;
+    }
+    .radicado-clickable:hover { 
+      color: var(--primary); 
+      text-decoration-color: var(--primary);
+    }
     
     .servicio-cell {
       max-width: 140px;
@@ -269,13 +262,59 @@
     .estado-badge.cerrado { background: #DCFCE7; color: #15803D; }
     .estado-badge.otra-dependencia { background: #F3E8FF; color: #7E22CE; }
     .estado-badge.duplicado { background: #F3E8FF; color: #7E22CE; }
+
+    /* PARTE 4: Menú Desplegable Único de Acciones */
+    .dropdown-actions { position: relative; display: inline-block; }
+    .btn-actions-trigger {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      border-radius: var(--radius-xs);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-actions-trigger:hover { background: #E2E8F0; }
     
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      margin-top: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      z-index: 200;
+      min-width: 160px;
+      overflow: hidden;
+    }
+    .dropdown-menu.show { display: block; }
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text-primary);
+      background: transparent;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .dropdown-item:hover { background: var(--bg-input); color: var(--secondary); }
+    .dropdown-item.danger:hover { background: #FEE2E2; color: #DC2626; }
+    .dropdown-item.success:hover { background: #DCFCE7; color: #15803D; }
+
     .btn-action { min-height: 38px; min-width: 38px; padding: 6px 10px; border-radius: var(--radius-xs); font-size: 12px; font-weight: 600; border: 1px solid; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; margin: 2px; touch-action: manipulation; }
-    .btn-assign { background: #FEF3C7; border-color: #FDE68A; color: #D97706; }
-    .btn-supplier { background: #F3E8FF; border-color: #E9D5FF; color: #7E22CE; }
-    .btn-close { background: #DCFCE7; border-color: #BBF7D0; color: #15803D; }
-    .btn-reprogram { background: #E0F2FE; border-color: #BAE6FD; color: #0284C7; }
-    .btn-tracking { background: #F1F5F9; border-color: #E2E8F0; color: #475569; }
     .btn-refresh { background: #E0F2FE; border-color: #BAE6FD; color: #0284C7; padding: 8px 12px; }
     .btn-copy { background: #DCFCE7; border-color: #BBF7D0; color: #15803D; }
 
@@ -327,7 +366,51 @@
     .loading-spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* MEDIA QUERIES PARA DISPOSITIVOS MÓVILES */
     @media (max-width: 768px) {
+      .top-nav {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 8px 10px;
+        gap: 6px;
+      }
+      .nav-brand {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+      .datetime-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        padding: 4px 8px;
+      }
+
+      /* Ajuste Punto 1: Estadísticas ultra-recogidas en pantallas táctiles */
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+      .stat-card {
+        padding: 6px 8px;
+      }
+      .stat-card .stat-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 10px;
+        margin-bottom: 2px;
+      }
+      .stat-card .stat-number {
+        font-size: 15px;
+      }
+      .stat-card .stat-label {
+        font-size: 8px;
+        line-height: 1.1;
+      }
+
       .main-content {
         padding: 8px;
       }
@@ -339,7 +422,7 @@
       }
 
       .data-table {
-        min-width: 720px;
+        min-width: 680px;
       }
 
       .data-table th, 
@@ -357,14 +440,6 @@
         box-shadow: -3px 0 6px rgba(0, 0, 0, 0.06);
         white-space: nowrap;
         text-align: center;
-      }
-
-      .btn-action {
-        min-height: 34px;
-        min-width: 34px;
-        padding: 4px 8px;
-        font-size: 11px;
-        margin: 1px;
       }
     }
 
@@ -391,7 +466,6 @@
     <div class="loading-text" id="loadingText" style="font-size:12px; color:var(--text-primary)">Procesando...</div>
   </div>
 
-  <!-- LOGIN -->
   <div class="login-container" id="loginSection">
     <div class="login-box">
       <div class="login-logo">
@@ -431,7 +505,6 @@
     </div>
   </div>
   
-  <!-- DASHBOARD -->
   <div class="dashboard" id="dashboardSection">
     <nav class="top-nav">
       <div class="nav-brand">
@@ -465,7 +538,7 @@
         <div class="stat-card total-mes" onclick="filterByStatus('todos')">
           <div class="stat-icon"><i class="fas fa-list-ol"></i></div>
           <div class="stat-number" id="statTotalMes">0</div>
-          <div class="stat-label">Total Carga Mes</div>
+          <div class="stat-label">Total Carga</div>
         </div>
         <div class="stat-card abiertos" onclick="filterByStatus('abiertos')">
           <div class="stat-icon"><i class="fas fa-folder-open"></i></div>
@@ -496,8 +569,9 @@
       
       <div class="section-header">
         <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" id="searchInput" placeholder="Buscar radicado, tienda..." oninput="filterTableDebounced()">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Buscar radicado, tienda..." oninput="handleSearchInput()">
+          <i class="fas fa-times-circle clear-search" id="clearSearchBtn" onclick="clearSearchField()"></i>
         </div>
         <div style="display:flex; gap:6px; align-items:center; justify-content:space-between;">
           <div class="filter-tabs">
@@ -533,7 +607,6 @@
     </div>
   </div>
   
-  <!-- MODAL ASIGNAR TÉCNICO -->
   <div class="modal-overlay" id="modalAsignar">
     <div class="modal">
       <h2><i class="fas fa-user-plus" style="color:var(--secondary)"></i> Asignar Técnico</h2>
@@ -550,7 +623,6 @@
     </div>
   </div>
 
-  <!-- MODAL ASIGNAR PROVEEDOR -->
   <div class="modal-overlay" id="modalProveedor">
     <div class="modal">
       <h2><i class="fas fa-truck" style="color:var(--secondary)"></i> Asignar Proveedor</h2>
@@ -567,7 +639,6 @@
     </div>
   </div>
   
-  <!-- MODAL CERRAR -->
   <div class="modal-overlay" id="modalCerrar">
     <div class="modal">
       <h2><i class="fas fa-check-circle" style="color:var(--success)"></i> Cerrar Radicado</h2>
@@ -580,14 +651,13 @@
     </div>
   </div>
   
-  <!-- MODAL SEGUIMIENTO Y DETALLE DEL SERVICIO -->
   <div class="modal-overlay" id="modalSeguimiento">
     <div class="modal">
       <h2><i class="fas fa-clipboard-list" style="color:var(--secondary)"></i> ManttUx Seguimiento</h2>
       <p class="modal-subtitle" id="modalSeguimientoSubtitle"></p>
       <div id="seguimientoInfo" style="background:var(--bg-input); border-radius:var(--radius-xs); padding:12px; font-size:12px; line-height:1.6; border:1px solid var(--border);"></div>
       <div class="modal-actions">
-        <button class="btn-action btn-copy" style="flex:1; padding:12px; font-size:13px;" onclick="copiarDetalleSeguimiento()"><i class="fas fa-copy"></i> Copi Resumen</button>
+        <button class="btn-action btn-copy" id="btnCopiarResumen" style="flex:1; padding:12px; font-size:13px;" onclick="copiarDetalleSeguimiento()"><i class="fas fa-copy"></i> Copiar Resumen</button>
         <button class="btn-modal-cancel" style="flex:1;" onclick="cerrarModal('modalSeguimiento')">Cerrar</button>
       </div>
     </div>
@@ -832,12 +902,18 @@
       return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
     }
 
+    // Cierre de menús contextuales y autocompletados al hacer clic fuera
     document.addEventListener('click', function(e) {
       if (!e.target.closest('.form-group')) {
         var resT = document.getElementById('resultsTecnico');
         var resP = document.getElementById('resultsProveedor');
         if (resT) resT.style.display = 'none';
         if (resP) resP.style.display = 'none';
+      }
+
+      if (!e.target.closest('.dropdown-actions')) {
+        var menus = document.querySelectorAll('.dropdown-menu');
+        menus.forEach(function(menu) { menu.classList.remove('show'); });
       }
     });
 
@@ -958,7 +1034,10 @@
         html += '<tr>';
         html += '<td>' + item.fecha + '</td>';
         html += '<td>' + escapeHtml(item.tienda) + '</td>';
-        html += '<td><strong>' + rad + '</strong></td>';
+        
+        /* PUNTO 3: Radicado clickeable para abrir modal de seguimiento */
+        html += '<td><span class="radicado-clickable" title="Haz clic para ver el servicio" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')">' + rad + '</span></td>';
+        
         html += '<td class="servicio-cell" title="' + escapeHtml(item.servicio) + '">' + escapeHtml(item.servicio) + '</td>';
         html += '<td><span class="estado-badge ' + getEstadoClass(item.estado) + '">' + escapeHtml(item.estado) + '</span></td>';
         
@@ -966,31 +1045,71 @@
           html += '<td style="font-size:11px; color:var(--secondary)">' + escapeHtml(item.tecnico || '—') + '</td>';
         }
         
+        /* PUNTO 4: Menú Unificado de Acciones Desplegable */
         html += '<td>';
+        html += '<div class="dropdown-actions">';
+        html += '<button class="btn-actions-trigger" onclick="toggleDropdownMenu(event, \'dropdown-' + i + '\')">Acciones <i class="fas fa-chevron-down"></i></button>';
+        html += '<div class="dropdown-menu" id="dropdown-' + i + '">';
+        
+        // Opción ver detalle disponible para todos los roles
+        html += '<button class="dropdown-item" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-eye"></i> Ver Servicio</button>';
+        
         if (isCoordinador) {
           if (!estaCerrado) {
-            html += '<button class="btn-action btn-assign" title="Asignar Técnico/Dependencia" onclick="abrirModalAsignar(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-user-plus"></i></button>';
+            html += '<button class="dropdown-item" onclick="abrirModalAsignar(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-user-plus"></i> Asignar Técnico</button>';
             if (esRequisicion) {
-              html += '<button class="btn-action btn-supplier" title="Asignar Proveedor" onclick="abrirModalProveedor(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-truck"></i></button>';
+              html += '<button class="dropdown-item" onclick="abrirModalProveedor(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-truck"></i> Asignar Proveedor</button>';
             }
-            html += '<button class="btn-action btn-tracking" title="Ver Detalle / Servicio" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-search"></i></button>';
-            html += '<button class="btn-action btn-close" title="Cerrar Radicado" onclick="cerrarRadicadoCoordinador(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-times-circle"></i></button>';
+            html += '<button class="dropdown-item danger" onclick="cerrarRadicadoCoordinador(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-times-circle"></i> Cerrar Radicado</button>';
           } else {
-            html += '<button class="btn-action btn-tracking" title="Ver Detalle / Servicio" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-search"></i></button>';
-            html += '<button class="btn-action btn-reprogram" title="Reabrir Radicado" onclick="reabrirRadicadoJS(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-lock-open"></i> Reabrir</button>';
+            html += '<button class="dropdown-item" onclick="reabrirRadicadoJS(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-lock-open"></i> Reabrir Radicado</button>';
           }
         }
+        
         if (isTecnicoOContratista) {
           if (!estaCerrado) {
-            html += '<button class="btn-action btn-close" onclick="abrirModalCerrar(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-check-circle"></i> Cerrar</button>';
+            html += '<button class="dropdown-item success" onclick="abrirModalCerrar(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-check-circle"></i> Cerrar Radicado</button>';
           }
-          html += '<button class="btn-action btn-tracking" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-box-open"></i> Ver Servicio</button>';
         }
+        
+        html += '</div></div>';
         html += '</td></tr>';
       }
       tbody.innerHTML = html;
     }
     
+    function toggleDropdownMenu(e, id) {
+      e.stopPropagation();
+      var currentMenu = document.getElementById(id);
+      var allMenus = document.querySelectorAll('.dropdown-menu');
+      
+      allMenus.forEach(function(m) {
+        if (m !== currentMenu) m.classList.remove('show');
+      });
+      
+      if (currentMenu) currentMenu.classList.toggle('show');
+    }
+
+    /* PUNTO 2: Funciones del Buscador Manual y Autoborrado */
+    function handleSearchInput() {
+      var input = document.getElementById('searchInput');
+      var clearBtn = document.getElementById('clearSearchBtn');
+      
+      if (input.value.length > 0) {
+        clearBtn.style.display = 'block';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+      filterTableDebounced();
+    }
+
+    function clearSearchField() {
+      var input = document.getElementById('searchInput');
+      input.value = '';
+      document.getElementById('clearSearchBtn').style.display = 'none';
+      renderTable();
+    }
+
     function filterTableDebounced() {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(async function() {
@@ -1164,6 +1283,15 @@
       info += '<div style="margin-top:10px; padding-top:6px; border-top:1px solid var(--border);"><b><i class="fas fa-boxes-stacked"></i> Materiales Solicitados / Proveedores:</b> <br><span style="color:var(--text-secondary); font-weight:500;">' + escapeHtml(item.materiales) + '</span></div>';
         
       document.getElementById('seguimientoInfo').innerHTML = info;
+
+      /* PUNTO 5: Control de visibilidad del botón "Copiar Resumen" por Rol */
+      var btnCopiar = document.getElementById('btnCopiarResumen');
+      if (currentUser && (currentUser.rol === 'tecnico' || currentUser.rol === 'contratista')) {
+        btnCopiar.style.display = 'none';
+      } else {
+        btnCopiar.style.display = 'inline-flex';
+      }
+
       document.getElementById('modalSeguimiento').classList.add('active');
     }
 
@@ -1184,7 +1312,7 @@
         }).join('\n');
       }
 
-      var resumen = '*MANTTUX SEGUIMIENTOS*' + '\n' +
+      var resumen = '📋 *MANTTUX SEGUIMIENTOS*' + '\n' +
         '• *Radicado:* ' + (item.radicado || '—') + '\n' +
         '• *Fecha de Servicio:* ' + (item.fecha || '—') + '\n' +
         '• *Tienda:* ' + (item.tienda || '—') + '\n' +
