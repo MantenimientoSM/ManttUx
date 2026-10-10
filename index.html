@@ -530,7 +530,7 @@
             </tr>
           </thead>
           <tbody id="tableBody">
-            <tr><td colspan="7" style="text-align:center; padding:20px;">Cargando...</td></tr>
+            <tr><td colspan="7" style="text-align:center; padding:20px;">Sincronizando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -587,7 +587,7 @@
   <!-- MODAL SEGUIMIENTO Y DETALLE DEL SERVICIO -->
   <div class="modal-overlay" id="modalSeguimiento">
     <div class="modal">
-      <h2><i class="fas fa-clipboard-list" style="color:var(--secondary)"></i> ManttUx Seguimiento</h2>
+      <h2><i class="fas fa-clipboard-list" style="color:var(--secondary)"></i> Pimo Seguimiento</h2>
       <p class="modal-subtitle" id="modalSeguimientoSubtitle"></p>
       <div id="seguimientoInfo" style="background:var(--bg-input); border-radius:var(--radius-xs); padding:12px; font-size:12px; line-height:1.6; border:1px solid var(--border);"></div>
       <div class="modal-actions">
@@ -899,7 +899,7 @@
 
         updateStats();
         renderTable();
-        if (mostrarCargador && currentUser) { showToast('Datos actualizados correctamente', 'info'); }
+        if (mostrarCargador && currentUser) { showToast('Datos Sincronizados correctamente', 'info'); }
       } catch (err) {
         if (mostrarCargador) hideLoading();
         showToast(err.message, 'error');
@@ -1068,7 +1068,7 @@
       if (!t) { showToast('Escriba o seleccione un técnico/dependencia', 'warning'); return; }
         
       cerrarModal('modalAsignar');
-      showLoading('Guardando asignación...');
+      showLoading('Guardando Asignación y Sincronizando...');
         
       try {
         var res = await callBackend('asignarRadicado', { fila: selectedFila, tecnico: t });
@@ -1095,7 +1095,7 @@
       if (!p) { showToast('Escriba o seleccione un proveedor', 'warning'); return; }
 
       cerrarModal('modalProveedor');
-      showLoading('Asignando proveedor...');
+      showLoading('Asignando Proveedor y Sincronizando......');
 
       try {
         var res = await callBackend('asignarProveedorRadicado', { radicado: selectedRadicado, proveedor: p });
@@ -1188,7 +1188,7 @@
         }).join('\n');
       }
 
-      var resumen = '*MANTTUX SEGUIMIENTOS*' + '\n' +
+      var resumen = '*SEGUIMIENTO PIMO*' + '\n' +
         '• *Radicado:* ' + (item.radicado || '—') + '\n' +
         '• *Fecha de Servicio:* ' + (item.fecha || '—') + '\n' +
         '• *Tienda:* ' + (item.tienda || '—') + '\n' +
