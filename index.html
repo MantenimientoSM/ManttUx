@@ -416,7 +416,7 @@
       </div>
       
       <div class="form-group">
-        <label>Correo Gmail</label>
+        <label>Correo</label>
         <div class="input-wrapper">
           <input type="email" id="inputUser" placeholder="ejemplo@gmail.com" autocomplete="off">
           <i class="fas fa-envelope"></i>
@@ -530,7 +530,7 @@
             </tr>
           </thead>
           <tbody id="tableBody">
-            <tr><td colspan="7" style="text-align:center; padding:20px;">Cargando...</td></tr>
+            <tr><td colspan="7" style="text-align:center; padding:20px;">Sincronizando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -615,7 +615,7 @@
     // Control de nuevos radicados y fluidez de sincronización
     var radicadosConocidos = new Set();
     var cargaInicialCompleta = false;
-    var intervaloSincroActual = 5000;
+    var intervaloSincroActual = 3000;
     var erroresSincroConsecutivos = 0;
     var sincronizandoEnCurso = false;
 
@@ -1041,7 +1041,7 @@
     }
 
     async function refreshData(mostrarCargador) {
-      if (mostrarCargador) showLoading('Sincronizando, por favor espere...');
+      if (mostrarCargador) showLoading('Sincronizando PIMO, por favor espere...');
       try {
         var result = await callBackend('busquedaAutomatica', { soloMesActual: filterOnlyCurrentMonth });
         if (mostrarCargador) hideLoading();
@@ -1260,7 +1260,7 @@
       if (!p) { showToast('Escriba o seleccione un proveedor', 'warning'); return; }
 
       cerrarModal('modalProveedor');
-      showLoading('Asignando proveedor...');
+      showLoading('Asignando proveedor y Sincronizando...');
 
       try {
         var res = await callBackend('asignarProveedorRadicado', { radicado: selectedRadicado, proveedor: p });
@@ -1282,7 +1282,7 @@
 
     async function confirmarCierre() {
       cerrarModal('modalCerrar');
-      showLoading('Verificando y cerrando radicado...');
+      showLoading('Verificando radicado y sincronizando para Cerrar...');
         
       try {
         var res = await callBackend('cerrarRadicado', { fila: selectedFila });
