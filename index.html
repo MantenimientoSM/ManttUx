@@ -629,6 +629,7 @@
       "SOLICITAR CON DPTO. DE CALIDAD",
       "SOLICITAR CON DPTO. DE PROYECTOS",
       "SOLICITAR CON DPTO. DE PUBLICIDAD",
+      "SOLICITAR CON DPTO. DE SEGURIDAD",
       "SOLICITAR CON SERVICIOS GENERALES",
       "SOLICTAR A SISTEMAS O MESA DE AYUDA"
     ];
@@ -685,7 +686,7 @@
             if (permiso === 'granted') {
               showToast('Notificaciones de explorador activadas para nuevos radicados', 'success');
             } else if (permiso === 'denied') {
-              showToast('Notificaciones bloqueadas en el explorador. Actívalas en el candado de la URL.', 'warning');
+              showToast('Notificaciones bloqueadas en el explorador. Actívalas en los ajustes del sitio.', 'warning');
             }
           }).catch(function(err) {
             console.error('Error pidiendo permiso de notificación:', err);
@@ -721,7 +722,7 @@
       var tienda = String(item.tienda || 'Sin especificar').trim();
       var servicio = String(item.servicio || 'Sin descripción').trim();
 
-      // 1. Notificación visual dentro de la app web
+      // 1. Notificación visual dentro de la app web + sonido discreto
       showToast('Nuevo radicado encontrado: ' + rad + ' — ' + tienda, 'info');
       reproducirSonidoDiscreto();
 
@@ -844,6 +845,7 @@
       if (clockInterval) clearInterval(clockInterval);
       currentUser = null;
       allData = [];
+      ultimoTimestampConocido = 0;
       cantidadRadicadosPrevios = -1;
       radicadosConocidos = new Set();
       cargaInicialCompleta = false;
@@ -883,22 +885,28 @@
       
       startClock();
       cargarDatalists();
-      refreshData(true);
-      iniciarSincronizacionAuto();
+      refreshData(true).then(function() {
+        iniciarSincronizacionAuto();
+      });
     }
 
     async function cargarDatalists() {
       try {
-        var tecnicos = await callBackend('obtenerTecnicos');
-        listaTecnicosCache = tecnicos || [];
-        listaTecnicosCombinada = dependenciasEspecialesLista.concat(listaTecnicosCache);
-      } catch (e) { console.error(e); }
+        var results = await Promise.allSettled([
+          callBackend('obtenerTecnicos'),
+          callBackend('obtenerProveedores')
+        ]);
 
-      try {
-        var proveedores = await callBackend('obtenerProveedores');
-        listaProveedoresCache = proveedores || [];
-        if (listaProveedoresCache.indexOf("SERVICIO DUPLICADO") === -1) {
-          listaProveedoresCache.unshift("SERVICIO DUPLICADO");
+        if (results[0].status === 'fulfilled') {
+          listaTecnicosCache = results[0].value || [];
+          listaTecnicosCombinada = dependenciasEspecialesLista.concat(listaTecnicosCache);
+        }
+
+        if (results[1].status === 'fulfilled') {
+          listaProveedoresCache = results[1].value || [];
+          if (listaProveedoresCache.indexOf("SERVICIO DUPLICADO") === -1) {
+            listaProveedoresCache.unshift("SERVICIO DUPLICADO");
+          }
         }
       } catch (e) { console.error(e); }
     }
@@ -996,7 +1004,13 @@
       programarSiguientePoll(intervaloSincroActual);
     }
 
-    function iniciarSincronizacionAuto() {
+    async function iniciarSincronizacionAuto() {
+      try {
+        var resTs = await callBackend('obtenerUltimaModificacion');
+        var tsInicial = (typeof resTs === 'object' && resTs !== null) ? Number(resTs.timestamp || 0) : Number(resTs || 0);
+        if (tsInicial) ultimoTimestampConocido = tsInicial;
+      } catch (e) { /* Continuar con siguiente ciclo */ }
+
       intervaloSincroActual = 5000;
       erroresSincroConsecutivos = 0;
       programarSiguientePoll(intervaloSincroActual);
@@ -1027,7 +1041,7 @@
     }
 
     async function refreshData(mostrarCargador) {
-      if (mostrarCargador) showLoading('Cargando...');
+      if (mostrarCargador) showLoading('Sincronizando, por favor espere...');
       try {
         var result = await callBackend('busquedaAutomatica', { soloMesActual: filterOnlyCurrentMonth });
         if (mostrarCargador) hideLoading();
@@ -1050,7 +1064,7 @@
 
         updateStats();
         renderTable();
-        if (mostrarCargador && currentUser) { showToast('Datos actualizados correctamente', 'info'); }
+        if (mostrarCargador && currentUser) { showToast('Datos Sincronizados correctamente', 'info'); }
       } catch (err) {
         if (mostrarCargador) hideLoading();
         showToast(err.message, 'error');
@@ -1219,7 +1233,7 @@
       if (!t) { showToast('Escriba o seleccione un técnico/dependencia', 'warning'); return; }
         
       cerrarModal('modalAsignar');
-      showLoading('Guardando asignación...');
+      showLoading('Guardando Asignación y Sincronizando...');
         
       try {
         var res = await callBackend('asignarRadicado', { fila: selectedFila, tecnico: t });
