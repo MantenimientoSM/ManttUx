@@ -324,7 +324,7 @@
     .toast-success { border-left: 4px solid var(--success); }
     .toast-warning { border-left: 4px solid var(--accent-dark); }
     .toast-error { border-left: 4px solid var(--danger); }
-    .toast-info { border-left: 4px solid var(--secondary); }
+    .toast-info { border-left: 4px solid var(--secondary); border-top: 2px solid var(--primary); }
     
     .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(244, 246, 249, 0.85); z-index: 3000; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 10px; }
     .loading-overlay.active { display: flex; }
@@ -392,7 +392,7 @@
   
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
-    <div class="loading-text" id="loadingText" style="font-size:12px; color:var(--text-primary)">Sincronizando...</div>
+    <div class="loading-text" id="loadingText" style="font-size:12px; color:var(--text-primary)">Procesando...</div>
   </div>
 
   <!-- LOGIN -->
@@ -530,7 +530,7 @@
             </tr>
           </thead>
           <tbody id="tableBody">
-            <tr><td colspan="7" style="text-align:center; padding:20px;">Sincronizando...</td></tr>
+            <tr><td colspan="7" style="text-align:center; padding:20px;">Cargando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -587,7 +587,7 @@
   <!-- MODAL SEGUIMIENTO Y DETALLE DEL SERVICIO -->
   <div class="modal-overlay" id="modalSeguimiento">
     <div class="modal">
-      <h2><i class="fas fa-clipboard-list" style="color:var(--secondary)"></i> Pimo Seguimiento</h2>
+      <h2><i class="fas fa-clipboard-list" style="color:var(--secondary)"></i> ManttUx Seguimiento</h2>
       <p class="modal-subtitle" id="modalSeguimientoSubtitle"></p>
       <div id="seguimientoInfo" style="background:var(--bg-input); border-radius:var(--radius-xs); padding:12px; font-size:12px; line-height:1.6; border:1px solid var(--border);"></div>
       <div class="modal-actions">
@@ -596,8 +596,6 @@
       </div>
     </div>
   </div>
-
-  <script src="api-client.js"></script>
 
   <script>
     var BACKEND_URL = "https://script.google.com/macros/s/AKfycbx9bOhLwEys51JdSYCdnSgdGkymzzJQzLx6wygaJ7VUWeUqMzScCr2TevMm2XpDjmwcuA/exec"; 
@@ -613,6 +611,13 @@
     var clockInterval = null;
     var ultimoTimestampConocido = 0;
     var cantidadRadicadosPrevios = -1;
+
+    // Control de nuevos radicados y fluidez de sincronización
+    var radicadosConocidos = new Set();
+    var cargaInicialCompleta = false;
+    var intervaloSincroActual = 5000;
+    var erroresSincroConsecutivos = 0;
+    var sincronizandoEnCurso = false;
 
     var listaTecnicosCache = [];
     var listaProveedoresCache = [];
@@ -656,6 +661,10 @@
       }
     }
 
+    function esCoordinadorWeb() {
+      return currentUser && String(currentUser.rol || '').toLowerCase() === 'coordinador';
+    }
+
     function esDispositivoMovil() {
       return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
@@ -666,6 +675,108 @@
           Notification.requestPermission();
         }
       }
+    }
+
+    function solicitarPermisoNotificacionCoordinadorPC() {
+      if (!esCoordinadorWeb()) return;
+      if ('Notification' in window) {
+        if (Notification.permission === 'default') {
+          Notification.requestPermission().then(function(permiso) {
+            if (permiso === 'granted') {
+              showToast('Notificaciones de explorador activadas para nuevos radicados', 'success');
+            } else if (permiso === 'denied') {
+              showToast('Notificaciones bloqueadas en el explorador. Actívalas en el candado de la URL.', 'warning');
+            }
+          }).catch(function(err) {
+            console.error('Error pidiendo permiso de notificación:', err);
+          });
+        } else if (Notification.permission === 'denied') {
+          showToast('Notificaciones de explorador bloqueadas en este sitio.', 'warning');
+        }
+      }
+    }
+
+    function reproducirSonidoDiscreto() {
+      try {
+        var AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        var ctx = new AudioCtx();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(660, ctx.currentTime);
+        gain.gain.setValueAtTime(0.03, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.18);
+      } catch (e) { /* Ignorado si el navegador bloquea audio sin interacción */ }
+    }
+
+    function notificarNuevoRadicadoCoordinador(item) {
+      if (!esCoordinadorWeb() || !item || !item.radicado) return;
+
+      var rad = String(item.radicado).trim();
+      var tienda = String(item.tienda || 'Sin especificar').trim();
+      var servicio = String(item.servicio || 'Sin descripción').trim();
+
+      // 1. Notificación visual dentro de la app web
+      showToast('Nuevo radicado encontrado: ' + rad + ' — ' + tienda, 'info');
+      reproducirSonidoDiscreto();
+
+      // 2. Notificación nativa del explorador en PC
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          var notif = new Notification('ManttUx — Nuevo Radicado: ' + rad, {
+            body: 'Tienda: ' + tienda + '\nServicio: ' + servicio,
+            tag: 'nuevo-radicado-' + rad,
+            renotify: false
+          });
+          notif.onclick = function() {
+            window.focus();
+            var inputBusq = document.getElementById('searchInput');
+            if (inputBusq) {
+              inputBusq.value = rad;
+              renderTable();
+            }
+            notif.close();
+          };
+        } catch (e) {
+          console.error('Error al disparar notificación del explorador:', e);
+        }
+      }
+    }
+
+    function procesarAlertasNuevosRadicados(datos) {
+      var lista = Array.isArray(datos) ? datos : [];
+      var actuales = new Set();
+
+      for (var i = 0; i < lista.length; i++) {
+        var r = String(lista[i].radicado || '').trim();
+        if (r) actuales.add(r);
+      }
+
+      if (!cargaInicialCompleta) {
+        radicadosConocidos = actuales;
+        cargaInicialCompleta = true;
+        return;
+      }
+
+      if (esCoordinadorWeb()) {
+        var nuevosItems = [];
+        for (var j = 0; j < lista.length; j++) {
+          var radItem = String(lista[j].radicado || '').trim();
+          if (radItem && !radicadosConocidos.has(radItem)) {
+            nuevosItems.push(lista[j]);
+          }
+        }
+        for (var k = nuevosItems.length - 1; k >= 0; k--) {
+          notificarNuevoRadicadoCoordinador(nuevosItems[k]);
+        }
+      }
+
+      radicadosConocidos = actuales;
     }
 
     function enviarNotificacionMovil(titulo, mensaje) {
@@ -729,9 +840,13 @@
     }
     
     function logout() {
-      if (temporizadorSincro) clearInterval(temporizadorSincro);
+      if (temporizadorSincro) clearTimeout(temporizadorSincro);
       if (clockInterval) clearInterval(clockInterval);
-      currentUser = null; allData = []; cantidadRadicadosPrevios = -1;
+      currentUser = null;
+      allData = [];
+      cantidadRadicadosPrevios = -1;
+      radicadosConocidos = new Set();
+      cargaInicialCompleta = false;
       document.body.style.overflowY = 'hidden';
       document.getElementById('dashboardSection').style.display = 'none';
       document.getElementById('loginSection').style.display = 'flex';
@@ -758,6 +873,7 @@
         document.getElementById('colTecnico').style.display = 'table-cell';
         document.getElementById('statSinAsignarCard').style.display = 'block';
         document.getElementById('tabSinAsignar').style.display = 'inline-block';
+        solicitarPermisoNotificacionCoordinadorPC();
       } else {
         document.getElementById('colTecnico').style.display = 'none';
         document.getElementById('statSinAsignarCard').style.display = 'none';
@@ -845,18 +961,52 @@
       }
     });
 
-    function iniciarSincronizacionAuto() {
-      if (temporizadorSincro) clearInterval(temporizadorSincro);
-      temporizadorSincro = setInterval(async function() {
-        try {
-          var timestampActual = await callBackend('obtenerUltimaModificacion');
-          if (timestampActual && timestampActual !== ultimoTimestampConocido) {
-            ultimoTimestampConocido = timestampActual;
-            refreshData(false); 
-          }
-        } catch (e) { console.error(e); }
-      }, 3500); 
+    function programarSiguientePoll(ms) {
+      if (temporizadorSincro) clearTimeout(temporizadorSincro);
+      temporizadorSincro = setTimeout(cicloSincronizacion, ms);
     }
+
+    async function cicloSincronizacion() {
+      if (!currentUser) return;
+
+      if (document.hidden || sincronizandoEnCurso) {
+        programarSiguientePoll(intervaloSincroActual);
+        return;
+      }
+
+      sincronizandoEnCurso = true;
+      try {
+        var resTs = await callBackend('obtenerUltimaModificacion');
+        var timestampActual = (typeof resTs === 'object' && resTs !== null) ? Number(resTs.timestamp || 0) : Number(resTs || 0);
+
+        erroresSincroConsecutivos = 0;
+        intervaloSincroActual = 5000;
+
+        if (timestampActual && timestampActual !== ultimoTimestampConocido) {
+          ultimoTimestampConocido = timestampActual;
+          await refreshData(false);
+        }
+      } catch (e) {
+        erroresSincroConsecutivos++;
+        intervaloSincroActual = Math.min(15000, Math.round(5000 * Math.pow(1.4, erroresSincroConsecutivos)));
+      } finally {
+        sincronizandoEnCurso = false;
+      }
+
+      programarSiguientePoll(intervaloSincroActual);
+    }
+
+    function iniciarSincronizacionAuto() {
+      intervaloSincroActual = 5000;
+      erroresSincroConsecutivos = 0;
+      programarSiguientePoll(intervaloSincroActual);
+    }
+
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden && currentUser) {
+        programarSiguientePoll(350);
+      }
+    });
 
     function refrescarTrasAccionInmediata() {
       ultimoTimestampConocido = new Date().getTime();
@@ -884,6 +1034,7 @@
         if (result.error) { showToast(result.error, 'error'); return; }
         
         allData = result.datos || [];
+        procesarAlertasNuevosRadicados(allData);
         
         if (currentUser && (currentUser.rol === 'tecnico' || currentUser.rol === 'contratista')) {
           var misServicios = getRoleFilteredData();
@@ -899,7 +1050,7 @@
 
         updateStats();
         renderTable();
-        if (mostrarCargador && currentUser) { showToast('Datos Sincronizados correctamente', 'info'); }
+        if (mostrarCargador && currentUser) { showToast('Datos actualizados correctamente', 'info'); }
       } catch (err) {
         if (mostrarCargador) hideLoading();
         showToast(err.message, 'error');
@@ -1068,7 +1219,7 @@
       if (!t) { showToast('Escriba o seleccione un técnico/dependencia', 'warning'); return; }
         
       cerrarModal('modalAsignar');
-      showLoading('Guardando Asignación y Sincronizando...');
+      showLoading('Guardando asignación...');
         
       try {
         var res = await callBackend('asignarRadicado', { fila: selectedFila, tecnico: t });
@@ -1095,7 +1246,7 @@
       if (!p) { showToast('Escriba o seleccione un proveedor', 'warning'); return; }
 
       cerrarModal('modalProveedor');
-      showLoading('Asignando Proveedor y Sincronizando......');
+      showLoading('Asignando proveedor...');
 
       try {
         var res = await callBackend('asignarProveedorRadicado', { radicado: selectedRadicado, proveedor: p });
