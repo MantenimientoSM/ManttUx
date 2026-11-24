@@ -285,7 +285,7 @@
 
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 12px; }
     .modal-overlay.active { display: flex; }
-    .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 440px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 460px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     .modal h2 { font-size: 16px; margin-bottom: 4px; color: var(--text-primary); }
     .modal-subtitle { font-size: 11px; color: var(--text-secondary); margin-bottom: 14px; }
     .modal select, .modal input[type="text"], .modal textarea { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); color: var(--text-primary); font-size: 13px; }
@@ -1210,7 +1210,7 @@
       return 'sin-asignar';
     }
     
-    function escapeHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g, "&#39;"); }
+    function escapeHtml(s) { return String(s || '').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/'/g, "'"); }
     
     function filterByStatus(s, btnElem) {
       currentFilter = s;
@@ -1315,7 +1315,9 @@
       var item = allData.find(function(i) { return String(i.radicado) === String(r); });
       if (!item) return;
 
+      selectedFila = f;
       selectedRadicado = r;
+      var isCoordinador = currentUser && currentUser.rol === 'coordinador';
         
       document.getElementById('modalSeguimientoSubtitle').textContent = 'Radicado: ' + r;
       var estaCerrado = (item.cierre === 'CERRADO' || item.estado === 'SERVICIO DUPLICADO');
@@ -1330,10 +1332,69 @@
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-info-circle"></i> Estado del radicado:</b> <span class="estado-badge ' + getEstadoClass(item.estado) + '">' + escapeHtml(item.estado) + '</span></div>';
       info += '<div style="margin-bottom:8px; padding-top:6px; border-top:1px solid var(--border);"><b><i class="fas fa-lock"></i> Estado de cierre:</b> <span style="color:' + colorCierre + '; font-weight:700;">' + escapeHtml(item.cierre || 'PENDIENTE') + '</span></div>';
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-calendar-check"></i> Fecha de cierre:</b> <span style="color:var(--text-secondary);">' + escapeHtml(item.fechaCierre || 'Sin registrar') + '</span></div>';
-      info += '<div style="margin-top:10px; padding-top:6px; border-top:1px solid var(--border);"><b><i class="fas fa-boxes-stacked"></i> Materiales Solicitados / Proveedores:</b> <br><span style="color:var(--text-secondary); font-weight:500;">' + escapeHtml(item.materiales) + '</span></div>';
+
+      // Sección de Materiales: SOLO lo que está actualmente en Requisición
+      var listaRequisicion = Array.isArray(item.materialesDetalle) ? item.materialesDetalle : [];
+      info += '<div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--border);">';
+      info += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">';
+      info += '<b><i class="fas fa-boxes-stacked"></i> Material en Requisición Activa:</b>';
+      if (listaRequisicion.length > 0) {
+        info += '<span style="font-size:10px; background:#E0F2FE; color:#0284C7; padding:2px 8px; border-radius:10px; font-weight:700;">' + listaRequisicion.length + ' activo(s)</span>';
+      }
+      info += '</div>';
+
+      if (listaRequisicion.length === 0) {
+        info += '<div style="padding:8px; background:#FFFFFF; border:1px dashed var(--border); border-radius:6px; color:var(--text-muted); font-size:11px; text-align:center;">Sin materiales pendientes en requisición</div>';
+      } else {
+        for (var idx = 0; idx < listaRequisicion.length; idx++) {
+          var matItem = listaRequisicion[idx];
+          info += '<div style="background:#FFFFFF; border:1px solid var(--border); border-left:3px solid #0284C7; border-radius:6px; padding:8px 10px; margin-bottom:6px;">';
+          info += '<div style="font-size:12px; color:var(--text-primary); font-weight:500; margin-bottom:4px;">' + escapeHtml(matItem.material) + '</div>';
+          info += '<div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:6px; font-size:10px; color:var(--text-secondary);">';
+          info += '<span><b>Prov:</b> ' + escapeHtml(matItem.proveedor) + ' • <b>Sol:</b> ' + escapeHtml(matItem.fechaStr) + '</span>';
+
+          if (isCoordinador && !estaCerrado) {
+            info += '<button class="btn-action btn-close" style="min-height:26px; padding:3px 8px; font-size:10px; margin:0;" onclick="confirmarCierreMaterial(\'' + escapeJsString(item.radicado) + '\', ' + matItem.fila + ', false)" title="Marcar material como listo/entregado y quitarlo de requisición"><i class="fas fa-check"></i> Material Listo</button>';
+          }
+          info += '</div></div>';
+        }
+
+        if (isCoordinador && !estaCerrado) {
+          info += '<div style="display:flex; gap:6px; margin-top:8px;">';
+          info += '<button class="btn-action btn-reprogram" style="flex:1; min-height:32px; font-size:11px; margin:0;" onclick="confirmarCierreMaterial(\'' + escapeJsString(item.radicado) + '\', 0, false)"><i class="fas fa-box-open"></i> Entregar Material (Pasar a En Proceso)</button>';
+          info += '<button class="btn-action btn-close" style="flex:1; min-height:32px; font-size:11px; margin:0;" onclick="confirmarCierreMaterial(\'' + escapeJsString(item.radicado) + '\', 0, true)"><i class="fas fa-check-double"></i> Cerrar Material y Radicado</button>';
+          info += '</div>';
+        }
+      }
+      info += '</div>';
         
       document.getElementById('seguimientoInfo').innerHTML = info;
       document.getElementById('modalSeguimiento').classList.add('active');
+    }
+
+    async function confirmarCierreMaterial(radicado, filaMaterial, cerrarServicioCompleto) {
+      var textoConfirmacion = cerrarServicioCompleto
+        ? '¿Confirmas que el material fue entregado y deseas CERRAR COMPLETAMENTE el radicado ' + radicado + '?'
+        : '¿Confirmas que este material ya está listo/entregado para quitarlo de Requisición?';
+
+      if (!confirm(textoConfirmacion)) return;
+
+      cerrarModal('modalSeguimiento');
+      showLoading(cerrarServicioCompleto ? 'Cerrando material y radicado...' : 'Marcando material como listo/entregado...');
+
+      try {
+        var res = await callBackend('cerrarMaterialRequisicion', {
+          radicado: radicado,
+          filaMaterial: filaMaterial || 0,
+          cerrarServicioCompleto: Boolean(cerrarServicioCompleto)
+        });
+        hideLoading();
+        showToast(res.mensaje, res.exito ? 'success' : 'warning');
+        refrescarTrasAccionInmediata();
+      } catch (err) {
+        hideLoading();
+        showToast('Error: ' + err.message, 'error');
+      }
     }
 
     function copiarDetalleSeguimiento() {
@@ -1343,13 +1404,12 @@
         return;
       }
 
-      var textoMateriales = String(item.materiales || '').trim();
-      var materialesFormateados = 'Sin solicitudes de materiales';
+      var listaRequisicion = Array.isArray(item.materialesDetalle) ? item.materialesDetalle : [];
+      var materialesFormateados = 'Sin materiales pendientes en requisición';
 
-      if (textoMateriales && textoMateriales !== 'Sin solicitudes de materiales') {
-        var listaMat = textoMateriales.split(/[/|]/);
-        materialesFormateados = listaMat.map(function(m) {
-          return '  - ' + m.trim();
+      if (listaRequisicion.length > 0) {
+        materialesFormateados = listaRequisicion.map(function(m) {
+          return '  - ' + m.material + ' [Prov: ' + m.proveedor + ']';
         }).join('\n');
       }
 
@@ -1360,7 +1420,7 @@
         '• *Descripción del Servicio:* ' + (item.servicio || '—') + '\n' +
         '• *Técnico / Contratista:* ' + (item.tecnico || '—') + '\n' +
         '• *Estado del radicado:* ' + (item.estado || '—') + '\n' +
-        '• *Descripción del Material:*\n' + materialesFormateados;
+        '• *Material en Requisición:*\n' + materialesFormateados;
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(resumen).then(function() {
