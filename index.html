@@ -565,7 +565,7 @@
         <div id="resultsProveedor" class="autocomplete-results"></div>
       </div>
       <div class="modal-actions">
-        <button class="btn-modal-confirm" onclick="confirmarProveedor()">Asignar Proveedor</button>
+        <button class="btn-modal-confirm" onclick="confirmarProveedor()">Asignar y Pasar a Requisición</button>
         <button class="btn-modal-cancel" onclick="cerrarModal('modalProveedor')">Cancelar</button>
       </div>
     </div>
@@ -612,7 +612,6 @@
     var ultimoTimestampConocido = 0;
     var cantidadRadicadosPrevios = -1;
 
-    // Control de nuevos radicados y fluidez de sincronización
     var radicadosConocidos = new Set();
     var cargaInicialCompleta = false;
     var intervaloSincroActual = 3000;
@@ -722,11 +721,9 @@
       var tienda = String(item.tienda || 'Sin especificar').trim();
       var servicio = String(item.servicio || 'Sin descripción').trim();
 
-      // 1. Notificación visual dentro de la app web + sonido discreto
       showToast('Nuevo radicado encontrado: ' + rad + ' — ' + tienda, 'info');
       reproducirSonidoDiscreto();
 
-      // 2. Notificación nativa del explorador en PC
       if ('Notification' in window && Notification.permission === 'granted') {
         try {
           var notif = new Notification('ManttUx — Nuevo Radicado: ' + rad, {
@@ -1121,7 +1118,8 @@
       for (var i = 0; i < filtered.length; i++) {
         var item = filtered[i];
         var rad = escapeHtml(item.radicado);
-        var esRequisicion = item.estado === 'Requisición de materiales';
+        var tieneMaterialesActivos = Array.isArray(item.materialesDetalle) && item.materialesDetalle.length > 0;
+        var esRequisicion = (item.estado === 'Requisición de materiales') || tieneMaterialesActivos;
         var estaCerrado = item.estado === 'CERRADO' || item.cierre === 'CERRADO' || item.estado === 'SERVICIO DUPLICADO';
         
         html += '<tr>';
@@ -1140,7 +1138,7 @@
           if (!estaCerrado) {
             html += '<button class="btn-action btn-assign" title="Asignar Técnico/Dependencia" onclick="abrirModalAsignar(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-user-plus"></i></button>';
             if (esRequisicion) {
-              html += '<button class="btn-action btn-supplier" title="Asignar Proveedor" onclick="abrirModalProveedor(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-truck"></i></button>';
+              html += '<button class="btn-action btn-supplier" title="Asignar Proveedor / Pasar a Requisición" onclick="abrirModalProveedor(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-truck"></i></button>';
             }
             html += '<button class="btn-action btn-tracking" title="Ver Detalle / Servicio" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-search"></i></button>';
             html += '<button class="btn-action btn-close" title="Cerrar Radicado" onclick="cerrarRadicadoCoordinador(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-times-circle"></i></button>';
@@ -1260,7 +1258,7 @@
       if (!p) { showToast('Escriba o seleccione un proveedor', 'warning'); return; }
 
       cerrarModal('modalProveedor');
-      showLoading('Asignando proveedor y Sincronizando...');
+      showLoading('Asignando proveedor y pasando a Requisición...');
 
       try {
         var res = await callBackend('asignarProveedorRadicado', { radicado: selectedRadicado, proveedor: p });
@@ -1333,36 +1331,54 @@
       info += '<div style="margin-bottom:8px; padding-top:6px; border-top:1px solid var(--border);"><b><i class="fas fa-lock"></i> Estado de cierre:</b> <span style="color:' + colorCierre + '; font-weight:700;">' + escapeHtml(item.cierre || 'PENDIENTE') + '</span></div>';
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-calendar-check"></i> Fecha de cierre:</b> <span style="color:var(--text-secondary);">' + escapeHtml(item.fechaCierre || 'Sin registrar') + '</span></div>';
 
-      // Sección de Materiales: SOLO lo que está actualmente en Requisición
-      var listaRequisicion = Array.isArray(item.materialesDetalle) ? item.materialesDetalle : [];
+      // Materiales abiertos: permite elegir qué material cerrar y cuál dejar abierto para Compras/requisición
+      var listaMateriales = Array.isArray(item.materialesDetalle) ? item.materialesDetalle : [];
+      var itemsRequisicion = listaMateriales.filter(function(m) { return m.enRequisicion; });
+      var itemsPendientes = listaMateriales.filter(function(m) { return !m.enRequisicion; });
+
       info += '<div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--border);">';
       info += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">';
-      info += '<b><i class="fas fa-boxes-stacked"></i> Material en Requisición Activa:</b>';
-      if (listaRequisicion.length > 0) {
-        info += '<span style="font-size:10px; background:#E0F2FE; color:#0284C7; padding:2px 8px; border-radius:10px; font-weight:700;">' + listaRequisicion.length + ' activo(s)</span>';
+      info += '<b><i class="fas fa-boxes-stacked"></i> Materiales Abiertos (Elige cuál cerrar):</b>';
+      if (listaMateriales.length > 0) {
+        info += '<span style="font-size:10px; background:#E0F2FE; color:#0284C7; padding:2px 8px; border-radius:10px; font-weight:700;">' + itemsRequisicion.length + ' en req. / ' + itemsPendientes.length + ' pend.</span>';
       }
       info += '</div>';
 
-      if (listaRequisicion.length === 0) {
+      if (listaMateriales.length === 0) {
         info += '<div style="padding:8px; background:#FFFFFF; border:1px dashed var(--border); border-radius:6px; color:var(--text-muted); font-size:11px; text-align:center;">Sin materiales pendientes en requisición</div>';
       } else {
-        for (var idx = 0; idx < listaRequisicion.length; idx++) {
-          var matItem = listaRequisicion[idx];
-          info += '<div style="background:#FFFFFF; border:1px solid var(--border); border-left:3px solid #0284C7; border-radius:6px; padding:8px 10px; margin-bottom:6px;">';
-          info += '<div style="font-size:12px; color:var(--text-primary); font-weight:500; margin-bottom:4px;">' + escapeHtml(matItem.material) + '</div>';
+        for (var idx = 0; idx < listaMateriales.length; idx++) {
+          var matItem = listaMateriales[idx];
+          var borderColor = matItem.enRequisicion ? '#0284C7' : '#D97706';
+          var badgeEstado = matItem.enRequisicion
+            ? '<span style="font-size:9px; background:#E0F2FE; color:#0284C7; padding:1px 6px; border-radius:8px; font-weight:700;">En Requisición</span>'
+            : '<span style="font-size:9px; background:#FEF3C7; color:#B45309; padding:1px 6px; border-radius:8px; font-weight:700;">Pendiente Proveedor</span>';
+
+          info += '<div style="background:#FFFFFF; border:1px solid var(--border); border-left:3px solid ' + borderColor + '; border-radius:6px; padding:8px 10px; margin-bottom:6px;">';
+          info += '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-bottom:4px;">';
+          info += '<div style="font-size:12px; color:var(--text-primary); font-weight:500;">' + escapeHtml(matItem.material) + '</div>';
+          info += badgeEstado;
+          info += '</div>';
           info += '<div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:6px; font-size:10px; color:var(--text-secondary);">';
           info += '<span><b>Prov:</b> ' + escapeHtml(matItem.proveedor) + ' • <b>Sol:</b> ' + escapeHtml(matItem.fechaStr) + '</span>';
 
           if (isCoordinador && !estaCerrado) {
-            info += '<button class="btn-action btn-close" style="min-height:26px; padding:3px 8px; font-size:10px; margin:0;" onclick="confirmarCierreMaterial(\'' + escapeJsString(item.radicado) + '\', ' + matItem.fila + ', false)" title="Marcar material como listo/entregado y quitarlo de requisición"><i class="fas fa-check"></i> Material Listo</button>';
+            info += '<div style="display:flex; gap:4px;">';
+            if (!matItem.enRequisicion) {
+              info += '<button class="btn-action btn-supplier" style="min-height:26px; padding:3px 8px; font-size:10px; margin:0;" onclick="cerrarModal(\'modalSeguimiento\'); abrirModalProveedor(' + item.fila + ', \'' + escapeJsString(item.radicado) + '\')" title="Asignar proveedor y pasar a Requisición"><i class="fas fa-truck"></i> Asignar Prov.</button>';
+            }
+            info += '<button class="btn-action btn-close" style="min-height:26px; padding:3px 8px; font-size:10px; margin:0;" onclick="confirmarCierreMaterial(\'' + escapeJsString(item.radicado) + '\', ' + matItem.fila + ', false)" title="Cerrar solo este material y dejar los demás abiertos"><i class="fas fa-check"></i> Cerrar Este</button>';
+            info += '</div>';
           }
           info += '</div></div>';
         }
 
         if (isCoordinador && !estaCerrado) {
-          info += '<div style="display:flex; gap:6px; margin-top:8px;">';
-          info += '<button class="btn-action btn-reprogram" style="flex:1; min-height:32px; font-size:11px; margin:0;" onclick="confirmarCierreMaterial(\'' + escapeJsString(item.radicado) + '\', 0, false)"><i class="fas fa-box-open"></i> Entregar Material (Pasar a En Proceso)</button>';
-          info += '<button class="btn-action btn-close" style="flex:1; min-height:32px; font-size:11px; margin:0;" onclick="confirmarCierreMaterial(\'' + escapeJsString(item.radicado) + '\', 0, true)"><i class="fas fa-check-double"></i> Cerrar Material y Radicado</button>';
+          info += '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">';
+          if (itemsPendientes.length > 0) {
+            info += '<button class="btn-action btn-supplier" style="flex:1; min-height:32px; font-size:11px; margin:0;" onclick="cerrarModal(\'modalSeguimiento\'); abrirModalProveedor(' + item.fila + ', \'' + escapeJsString(item.radicado) + '\')"><i class="fas fa-truck"></i> Asignar Proveedor (Requisición)</button>';
+          }
+          info += '<button class="btn-action btn-close" style="flex:1; min-height:32px; font-size:11px; margin:0;" onclick="confirmarCierreMaterial(\'' + escapeJsString(item.radicado) + '\', 0, true)"><i class="fas fa-check-double"></i> Cerrar Radicado Completo</button>';
           info += '</div>';
         }
       }
@@ -1374,13 +1390,13 @@
 
     async function confirmarCierreMaterial(radicado, filaMaterial, cerrarServicioCompleto) {
       var textoConfirmacion = cerrarServicioCompleto
-        ? '¿Confirmas que el material fue entregado y deseas CERRAR COMPLETAMENTE el radicado ' + radicado + '?'
-        : '¿Confirmas que este material ya está listo/entregado para quitarlo de Requisición?';
+        ? '¿Confirmas que deseas CERRAR COMPLETAMENTE el radicado ' + radicado + ' y sus materiales?'
+        : '¿Confirmas cerrar únicamente este material? Los demás materiales y el radicado seguirán abiertos.';
 
       if (!confirm(textoConfirmacion)) return;
 
       cerrarModal('modalSeguimiento');
-      showLoading(cerrarServicioCompleto ? 'Cerrando material y radicado...' : 'Marcando material como listo/entregado...');
+      showLoading(cerrarServicioCompleto ? 'Cerrando radicado...' : 'Cerrando material seleccionado...');
 
       try {
         var res = await callBackend('cerrarMaterialRequisicion', {
@@ -1404,27 +1420,27 @@
         return;
       }
 
-      var listaRequisicion = Array.isArray(item.materialesDetalle) ? item.materialesDetalle : [];
+      var listaMateriales = Array.isArray(item.materialesDetalle) ? item.materialesDetalle : [];
       var materialesFormateados = 'Sin materiales pendientes en requisición';
 
-      if (listaRequisicion.length > 0) {
-        materialesFormateados = listaRequisicion.map(function(m) {
-          return '  - ' + m.material + ' [Prov: ' + m.proveedor + ']';
+      if (listaMateriales.length > 0) {
+        materialesFormateados = listaMateriales.map(function(m) {
+          return '  - ' + m.material + ' [Prov: ' + m.proveedor + ' | Sol: ' + m.fechaDia + ' | Estado: ' + m.estado + ']';
         }).join('\n');
       }
 
-      var resumen = '*SEGUIMIENTO PIMO*' + '\n' +
+      var resumen = '*SEGUIMIENTO RADICADO PIMO*' + '\n' +
         '• *Radicado:* ' + (item.radicado || '—') + '\n' +
         '• *Fecha de Servicio:* ' + (item.fecha || '—') + '\n' +
         '• *Tienda:* ' + (item.tienda || '—') + '\n' +
         '• *Descripción del Servicio:* ' + (item.servicio || '—') + '\n' +
         '• *Técnico / Contratista:* ' + (item.tecnico || '—') + '\n' +
         '• *Estado del radicado:* ' + (item.estado || '—') + '\n' +
-        '• *Material en Requisición:*\n' + materialesFormateados;
+        '• *Materiales Abiertos / Requisición:*\n' + materialesFormateados;
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(resumen).then(function() {
-          showToast('¡Información copiada al portapapeles!', 'success');
+          showToast('¡Información copiada al portapapeles para Compras/correo!', 'success');
         }).catch(function(err) {
           copiarTextoFallback(resumen);
         });
@@ -1443,7 +1459,7 @@
       areaTexto.select();
       try {
         document.execCommand('copy');
-        showToast('¡Información copiada al portapapeles!', 'success');
+        showToast('¡Información copiada al portapapeles para Compras/correo!', 'success');
       } catch (err) {
         showToast('Error al copiar el texto', 'error');
       }
