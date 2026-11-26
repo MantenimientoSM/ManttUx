@@ -581,64 +581,64 @@
 
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
         <div class="form-group">
-          <label>Radicado (D3)</label>
+          <label>Radicado (:)</label>
           <input type="text" id="infRadicado" readonly style="background:#EEF2F6; font-weight:600;">
         </div>
         <div class="form-group">
-          <label>Negocio / Tienda (E7:F7 · DATOS!A)</label>
+          <label>Negocio / Tienda (:)</label>
           <select id="infNegocioTienda"></select>
         </div>
         <div class="form-group">
-          <label>Sección / Equipo (E8:F8 · DATOS!G)</label>
+          <label>Sección / Equipo (:)</label>
           <select id="infSeccionEquipo"></select>
         </div>
         <div class="form-group">
-          <label>Área (D14:E14 · DATOS!G)</label>
+          <label>Área (:)</label>
           <select id="infArea"></select>
         </div>
         <div class="form-group">
-          <label>Equipo (D43:E43 · DATOS!F)</label>
+          <label>Equipo (:)</label>
           <select id="infEquipo"></select>
         </div>
       </div>
 
       <div class="form-group">
-        <label>Servicio (B21:C22 · Desde Servicios)</label>
+        <label>Servicio (:)</label>
         <textarea id="infServicio" rows="2"></textarea>
       </div>
 
       <div class="form-group">
-        <label>Realizado, Equipo y Resultado Final (B45:C45)</label>
+        <label>Servicio Realizado y Resultado Final (:)</label>
         <textarea id="infDetalleRealizado" rows="3" placeholder="Detalle de lo realizado, equipo intervenido y resultado final..."></textarea>
       </div>
 
       <div class="form-group">
-        <label>Evidencias Fotográficas (Haz clic en una zona y pega con Ctrl+V o elige archivo)</label>
+        <label>Evidencias Fotográficas (Haz clic en una zona o pega con Ctrl+V o elige archivo)</label>
         <div id="gridEvidenciasInforme" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:10px;">
           <div class="evidencia-box" data-slot="1" onclick="activarSlotEvidencia(1)" tabindex="0"
                style="border:1.5px dashed var(--secondary); border-radius:8px; padding:10px; background:var(--bg-input);">
-            <div style="font-size:11px; font-weight:700; color:var(--secondary); margin-bottom:4px;">Foto #1 (D16:E22)</div>
+            <div style="font-size:11px; font-weight:700; color:var(--secondary); margin-bottom:4px;">Foto #1 (:)</div>
             <input type="file" accept="image/*" onchange="handleArchivoSlot(1, this)" style="font-size:10px; width:100%;">
             <img id="imgEvid1" src="" style="display:none; max-height:110px; margin-top:6px; border-radius:4px;">
             <button type="button" class="btn-action" style="margin-top:6px; min-height:26px; font-size:10px;" onclick="event.stopPropagation(); limpiarSlotEvidencia(1)">Quitar</button>
           </div>
           <div class="evidencia-box" data-slot="2" onclick="activarSlotEvidencia(2)" tabindex="0"
                style="border:1.5px dashed var(--secondary); border-radius:8px; padding:10px; background:var(--bg-input);">
-            <div style="font-size:11px; font-weight:700; color:var(--secondary); margin-bottom:4px;">Foto #2 (D45:E53)</div>
+            <div style="font-size:11px; font-weight:700; color:var(--secondary); margin-bottom:4px;">Foto #2 (:)</div>
             <input type="file" accept="image/*" onchange="handleArchivoSlot(2, this)" style="font-size:10px; width:100%;">
             <img id="imgEvid2" src="" style="display:none; max-height:110px; margin-top:6px; border-radius:4px;">
             <button type="button" class="btn-action" style="margin-top:6px; min-height:26px; font-size:10px;" onclick="event.stopPropagation(); limpiarSlotEvidencia(2)">Quitar</button>
           </div>
           <div class="evidencia-box" data-slot="3" onclick="activarSlotEvidencia(3)" tabindex="0"
                style="border:1.5px dashed var(--secondary); border-radius:8px; padding:10px; background:var(--bg-input);">
-            <div style="font-size:11px; font-weight:700; color:var(--secondary); margin-bottom:4px;">Foto #3 (D54:E65)</div>
+            <div style="font-size:11px; font-weight:700; color:var(--secondary); margin-bottom:4px;">Foto #3 (:)</div>
             <input type="file" accept="image/*" onchange="handleArchivoSlot(3, this)" style="font-size:10px; width:100%;">
             <img id="imgEvid3" src="" style="display:none; max-height:110px; margin-top:6px; border-radius:4px;">
             <button type="button" class="btn-action" style="margin-top:6px; min-height:26px; font-size:10px;" onclick="event.stopPropagation(); limpiarSlotEvidencia(3)">Quitar</button>
           </div>
           <div class="evidencia-box" data-slot="4" onclick="activarSlotEvidencia(4)" tabindex="0"
                style="border:1.5px dashed var(--secondary); border-radius:8px; padding:10px; background:var(--bg-input);">
-            <div style="font-size:11px; font-weight:700; color:var(--secondary); margin-bottom:4px;">Foto #4 (D66:E75)</div>
+            <div style="font-size:11px; font-weight:700; color:var(--secondary); margin-bottom:4px;">Foto #4 (:)</div>
             <input type="file" accept="image/*" onchange="handleArchivoSlot(4, this)" style="font-size:10px; width:100%;">
             <img id="imgEvid4" src="" style="display:none; max-height:110px; margin-top:6px; border-radius:4px;">
             <button type="button" class="btn-action" style="margin-top:6px; min-height:26px; font-size:10px;" onclick="event.stopPropagation(); limpiarSlotEvidencia(4)">Quitar</button>
@@ -648,7 +648,7 @@
 
       <div class="form-group">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px; flex-wrap:wrap;">
-          <label style="margin-bottom:0;">III. Inventarios Realizados (Fila 91+ · N°, Repuestos, Tipo, Sistema, Estado)</label>
+          <label style="margin-bottom:0;">III. Inventarios Realizados ( N°, Repuestos, Tipo, Sistema, Estado)</label>
           <button type="button" class="btn-action btn-reprogram" style="min-height:30px; padding:4px 10px; font-size:11px; margin:0;" onclick="agregarFilaInventario()">
             <i class="fas fa-plus"></i> Agregar ítem
           </button>
@@ -657,9 +657,9 @@
       </div>
 
       <div class="form-group">
-        <label>Correo Opcional (D102:E102 · DATOS!E6:E23)</label>
+        <label>Correo Opcional Para envio de informe por baja de Mercacia (:)</label>
         <select id="infCorreoDestino">
-          <option value="">— No enviar correo / Seleccionar —</option>
+          <option value="">— Selecione Correo de la lista / Seleccionar —</option>
         </select>
       </div>
 
