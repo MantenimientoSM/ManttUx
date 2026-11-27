@@ -275,16 +275,17 @@
     .estado-badge.otra-dependencia { background: #F3E8FF; color: #7E22CE; }
     .estado-badge.duplicado { background: #F3E8FF; color: #7E22CE; }
     
-    .btn-action { min-height: 38px; min-width: 38px; padding: 6px 10px; border-radius: var(--radius-xs); font-size: 12px; font-weight: 600; border: 1px solid; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; margin: 2px; touch-action: manipulation; }
+    .btn-action { min-height: 36px; min-width: 36px; padding: 6px 12px; border-radius: var(--radius-xs); font-size: 12px; font-weight: 600; border: 1px solid; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; margin: 2px; touch-action: manipulation; transition: all 0.15s ease; }
     .btn-assign { background: #FEF3C7; border-color: #FDE68A; color: #D97706; }
     .btn-supplier { background: #F3E8FF; border-color: #E9D5FF; color: #7E22CE; }
     .btn-close { background: #DCFCE7; border-color: #BBF7D0; color: #15803D; }
     .btn-reprogram { background: #E0F2FE; border-color: #BAE6FD; color: #0284C7; }
-    .btn-tracking { background: #F1F5F9; border-color: #E2E8F0; color: #475569; }
+    .btn-tracking { background: #F1F5F9; border-color: #CBD5E1; color: #334155; }
+    .btn-tracking:hover { background: #E2E8F0; border-color: #94A3B8; color: #0F172A; }
     .btn-refresh { background: #E0F2FE; border-color: #BAE6FD; color: #0284C7; padding: 8px 12px; }
     .btn-copy { background: #DCFCE7; border-color: #BBF7D0; color: #15803D; }
 
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 12px; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.42); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 12px; }
     .modal-overlay.active { display: flex; }
     .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 460px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     .modal h2 { font-size: 16px; margin-bottom: 4px; color: var(--text-primary); }
@@ -294,6 +295,160 @@
     .modal-actions button { flex: 1; padding: 12px; border-radius: var(--radius-xs); font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
     .btn-modal-confirm { background: var(--primary); color: white; }
     .btn-modal-cancel { background: transparent; border: 1px solid var(--border) !important; color: var(--text-secondary); }
+
+    /* MODAL DE ACCIONES TRANSLÚCIDO (GLASSMORPHISM) */
+    .modal.modal-glass {
+      background: rgba(255, 255, 255, 0.80);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+
+    /* CRISTAL ESMERILADO RGBA APLICADO SOLO A: ASIGNAR TÉCNICO, ASIGNAR PROVEEDOR, CERRAR RADICADO Y MANTTUX SEGUIMIENTO */
+    .modal.modal-frosted-rgba {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 20px 38px -10px rgba(15, 23, 42, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    }
+    .modal.modal-frosted-rgba input[type="text"],
+    .modal.modal-frosted-rgba select,
+    .modal.modal-frosted-rgba textarea {
+      background: rgba(255, 255, 255, 0.88);
+      border-color: rgba(203, 213, 225, 0.85);
+      color: var(--text-primary);
+    }
+    .modal.modal-frosted-rgba .btn-modal-cancel {
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(203, 213, 225, 0.85) !important;
+      color: var(--text-primary);
+    }
+    .modal.modal-frosted-rgba .btn-modal-cancel:hover {
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .modal-glass-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .modal-glass-header h2 {
+      margin-bottom: 0;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-close-x {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(203, 213, 225, 0.7);
+      background: rgba(255, 255, 255, 0.55);
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s ease;
+    }
+    .btn-close-x:hover {
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text-primary);
+    }
+    .action-modal-hero {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      letter-spacing: 0.2px;
+    }
+    .action-modal-summary {
+      background: rgba(248, 250, 252, 0.65);
+      border: 1px solid rgba(203, 213, 225, 0.65);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      font-size: 12px;
+    }
+    .action-modal-summary-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    .action-modal-service {
+      color: var(--text-primary);
+      font-size: 12px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    .action-sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+    }
+    @media (max-width: 420px) {
+      .action-sheet-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .action-tile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+    }
+    .action-tile:hover {
+      background: rgba(255, 255, 255, 0.92);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.09);
+    }
+    .action-tile i {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .action-tile.tile-assign i { background: rgba(254, 243, 199, 0.9); color: #D97706; }
+    .action-tile.tile-supplier i { background: rgba(243, 232, 255, 0.9); color: #7E22CE; }
+    .action-tile.tile-tracking i { background: rgba(224, 242, 254, 0.9); color: #0284C7; }
+    .action-tile.tile-pdf i { background: rgba(254, 226, 226, 0.9); color: var(--primary); }
+    .action-tile.tile-close i { background: rgba(220, 252, 231, 0.9); color: #15803D; }
+    .action-tile.tile-reopen i { background: rgba(224, 242, 254, 0.9); color: var(--secondary); }
+    .modal-glass .btn-modal-cancel {
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(203, 213, 225, 0.75) !important;
+      color: var(--text-primary);
+      transition: background 0.15s ease;
+    }
+    .modal-glass .btn-modal-cancel:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
 
     @media (max-width: 640px) {
       .inv-item-row {
@@ -308,7 +463,9 @@
       right: 0;
       max-height: 180px;
       overflow-y: auto;
-      background: var(--bg-card);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 1px solid var(--border);
       border-radius: 0 0 var(--radius-xs) var(--radius-xs);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
@@ -352,7 +509,7 @@
         white-space: nowrap;
         text-align: center;
       }
-      .btn-action { min-height: 34px; min-width: 34px; padding: 4px 8px; font-size: 11px; margin: 1px; }
+      .btn-action { min-height: 34px; min-width: 34px; padding: 4px 10px; font-size: 11px; margin: 1px; }
     }
 
     @media (min-width: 769px) {
@@ -512,10 +669,29 @@
       </div>
     </div>
   </div>
+
+  <!-- MODAL INTERACTIVO DE ACCIONES (TRANSLÚCIDO) -->
+  <div class="modal-overlay" id="modalAcciones" onclick="if(event.target === this) cerrarModal('modalAcciones')">
+    <div class="modal modal-glass">
+      <div class="modal-glass-header">
+        <h2><i class="fas fa-sliders-h" style="color:var(--secondary)"></i> Acciones del Radicado</h2>
+        <button type="button" class="btn-close-x" title="Cerrar" onclick="cerrarModal('modalAcciones')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="action-modal-hero" id="modalAccionesSubtitle"></div>
+
+      <div class="action-modal-summary" id="modalAccionesResumen"></div>
+
+      <div class="action-sheet-grid" id="modalAccionesGrid"></div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-cancel" onclick="cerrarModal('modalAcciones')">Cerrar</button>
+      </div>
+    </div>
+  </div>
   
   <!-- MODAL ASIGNAR TÉCNICO -->
   <div class="modal-overlay" id="modalAsignar">
-    <div class="modal">
+    <div class="modal modal-frosted-rgba">
       <h2><i class="fas fa-user-plus" style="color:var(--secondary)"></i> Asignar Técnico</h2>
       <p class="modal-subtitle" id="modalAsignarSubtitle"></p>
       <div class="form-group">
@@ -532,7 +708,7 @@
 
   <!-- MODAL ASIGNAR PROVEEDOR -->
   <div class="modal-overlay" id="modalProveedor">
-    <div class="modal">
+    <div class="modal modal-frosted-rgba">
       <h2><i class="fas fa-truck" style="color:var(--secondary)"></i> Asignar Proveedor</h2>
       <p class="modal-subtitle" id="modalProveedorSubtitle"></p>
       <div class="form-group">
@@ -549,10 +725,10 @@
   
   <!-- MODAL CERRAR -->
   <div class="modal-overlay" id="modalCerrar">
-    <div class="modal">
+    <div class="modal modal-frosted-rgba">
       <h2><i class="fas fa-check-circle" style="color:var(--success)"></i> Cerrar Radicado</h2>
       <p class="modal-subtitle" id="modalCerrarSubtitle"></p>
-      <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;"> ManttUx le informa que Estamos Registrando el Cierre de este Radicado se notificara al Coordinador.</p>
+      <p style="font-size: 12px; color: var(--text-primary); margin-bottom: 12px;"> ManttUx le informa que Estamos Registrando el Cierre de este Radicado se notificara al Coordinador.</p>
       <div class="modal-actions">
         <button class="btn-modal-confirm" id="btnConfirmarCierre" onclick="confirmarCierre()">Confirme Cierre</button>
         <button class="btn-modal-cancel" onclick="cerrarModal('modalCerrar')">Cancelar</button>
@@ -562,10 +738,10 @@
   
   <!-- MODAL SEGUIMIENTO Y DETALLE DEL SERVICIO -->
   <div class="modal-overlay" id="modalSeguimiento">
-    <div class="modal">
+    <div class="modal modal-frosted-rgba">
       <h2><i class="fas fa-clipboard-list" style="color:var(--secondary)"></i> ManttUx Seguimiento</h2>
       <p class="modal-subtitle" id="modalSeguimientoSubtitle"></p>
-      <div id="seguimientoInfo" style="background:var(--bg-input); border-radius:var(--radius-xs); padding:12px; font-size:12px; line-height:1.6; border:1px solid var(--border);"></div>
+      <div id="seguimientoInfo" style="background:rgba(248, 250, 252, 0.72); border-radius:var(--radius-xs); padding:12px; font-size:12px; line-height:1.6; border:1px solid rgba(203, 213, 225, 0.75);"></div>
       <div class="modal-actions">
         <button class="btn-action btn-copy" style="flex:1; padding:12px; font-size:13px;" onclick="copiarDetalleSeguimiento()"><i class="fas fa-copy"></i> Copiar Resumen</button>
         <button class="btn-modal-cancel" style="flex:1;" onclick="cerrarModal('modalSeguimiento')">Cerrar</button>
@@ -1329,14 +1505,11 @@
       
       var html = '';
       var isCoordinador = currentUser && currentUser.rol === 'coordinador';
-      var isTecnicoOContratista = currentUser && (currentUser.rol === 'tecnico' || currentUser.rol === 'contratista');
       
       for (var i = 0; i < filtered.length; i++) {
         var item = filtered[i];
         var rad = escapeHtml(item.radicado);
-        var tieneMaterialesActivos = Array.isArray(item.materialesDetalle) && item.materialesDetalle.length > 0;
-        var esRequisicion = (item.estado === 'Requisición de materiales') || tieneMaterialesActivos;
-        var estaCerrado = item.estado === 'CERRADO' || item.cierre === 'CERRADO' || item.estado === 'SERVICIO DUPLICADO';
+        var radJs = escapeJsString(String(item.radicado || ''));
         
         html += '<tr>';
         html += '<td>' + item.fecha + '</td>';
@@ -1350,31 +1523,116 @@
         }
         
         html += '<td>';
-        if (isCoordinador) {
-          if (!estaCerrado) {
-            html += '<button class="btn-action btn-assign" title="Asignar Técnico/Dependencia" onclick="abrirModalAsignar(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-user-plus"></i></button>';
-            if (esRequisicion) {
-              html += '<button class="btn-action btn-supplier" title="Asignar Proveedor / Pasar a Requisición" onclick="abrirModalProveedor(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-truck"></i></button>';
-            }
-            html += '<button class="btn-action btn-tracking" title="Ver Detalle / Servicio" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-search"></i></button>';
-            html += '<button class="btn-action btn-tracking" title="Generar Informe / Acta PDF" onclick="abrirModalInforme(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-file-pdf"></i></button>';
-            html += '<button class="btn-action btn-close" title="Cerrar Radicado" onclick="cerrarRadicadoCoordinador(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-times-circle"></i></button>';
-          } else {
-            html += '<button class="btn-action btn-tracking" title="Ver Detalle / Servicio" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-search"></i></button>';
-            html += '<button class="btn-action btn-tracking" title="Generar Informe / Acta PDF" onclick="abrirModalInforme(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-file-pdf"></i></button>';
-            html += '<button class="btn-action btn-reprogram" title="Reabrir Radicado" onclick="reabrirRadicadoJS(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-lock-open"></i> Reabrir</button>';
-          }
-        }
-        if (isTecnicoOContratista) {
-          if (!estaCerrado) {
-            html += '<button class="btn-action btn-close" onclick="abrirModalCerrar(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-check-circle"></i> Cerrar</button>';
-          }
-          html += '<button class="btn-action btn-tracking" onclick="abrirModalSeguimiento(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-box-open"></i> Ver Servicio</button>';
-          html += '<button class="btn-action btn-tracking" title="Generar Informe / Acta PDF" onclick="abrirModalInforme(' + item.fila + ',\'' + rad + '\')"><i class="fas fa-file-pdf"></i></button>';
-        }
+        html += '<button type="button" class="btn-action btn-tracking" title="Gestionar Radicado" onclick="abrirModalAcciones(' + item.fila + ',\'' + radJs + '\')">Acciones <i class="fas fa-ellipsis-v"></i></button>';
         html += '</td></tr>';
       }
       tbody.innerHTML = html;
+    }
+
+    function abrirModalAcciones(fila, radicado) {
+      var item = allData.find(function(d) { return String(d.radicado) === String(radicado); });
+      if (!item) {
+        showToast('No se encontró la información del radicado', 'warning');
+        return;
+      }
+
+      selectedFila = fila;
+      selectedRadicado = radicado;
+
+      var isCoordinador = currentUser && currentUser.rol === 'coordinador';
+      var isTecnicoOContratista = currentUser && (currentUser.rol === 'tecnico' || currentUser.rol === 'contratista');
+      var tieneMaterialesActivos = Array.isArray(item.materialesDetalle) && item.materialesDetalle.length > 0;
+      var esRequisicion = (item.estado === 'Requisición de materiales') || tieneMaterialesActivos;
+      var estaCerrado = item.estado === 'CERRADO' || item.cierre === 'CERRADO' || item.estado === 'SERVICIO DUPLICADO';
+
+      document.getElementById('modalAccionesSubtitle').textContent =
+        'Radicado ' + (item.radicado || '') + ' • ' + (item.tienda || 'Sin tienda');
+
+      document.getElementById('modalAccionesResumen').innerHTML =
+        '<div class="action-modal-summary-top">' +
+          '<span><span class="estado-badge ' + getEstadoClass(item.estado) + '">' + escapeHtml(item.estado) + '</span></span>' +
+          '<span style="font-size:11px; color:var(--secondary); font-weight:700;">' + escapeHtml(item.tecnico || 'Sin asignar') + '</span>' +
+        '</div>' +
+        '<div class="action-modal-service">' + escapeHtml(item.servicio || 'Sin descripción de servicio') + '</div>';
+
+      var tiles = '';
+
+      if (isCoordinador) {
+        if (!estaCerrado) {
+          tiles +=
+            '<button type="button" class="action-tile tile-assign" onclick="ejecutarAccionDesdeModal(\'asignar\')">' +
+              '<i class="fas fa-user-plus"></i>' +
+              '<span>Asignar Técnico</span>' +
+            '</button>';
+
+          if (esRequisicion) {
+            tiles +=
+              '<button type="button" class="action-tile tile-supplier" onclick="ejecutarAccionDesdeModal(\'proveedor\')">' +
+                '<i class="fas fa-truck"></i>' +
+                '<span>Asignar Proveedor</span>' +
+              '</button>';
+          }
+        }
+
+        tiles +=
+          '<button type="button" class="action-tile tile-tracking" onclick="ejecutarAccionDesdeModal(\'seguimiento\')">' +
+            '<i class="fas fa-search"></i>' +
+            '<span>Ver Detalle</span>' +
+          '</button>' +
+          '<button type="button" class="action-tile tile-pdf" onclick="ejecutarAccionDesdeModal(\'informe\')">' +
+            '<i class="fas fa-file-pdf"></i>' +
+            '<span>Informe / Acta PDF</span>' +
+          '</button>';
+
+        if (!estaCerrado) {
+          tiles +=
+            '<button type="button" class="action-tile tile-close" onclick="ejecutarAccionDesdeModal(\'cerrar\')">' +
+              '<i class="fas fa-times-circle"></i>' +
+              '<span>Cerrar Radicado</span>' +
+            '</button>';
+        } else {
+          tiles +=
+            '<button type="button" class="action-tile tile-reopen" onclick="ejecutarAccionDesdeModal(\'reabrir\')">' +
+              '<i class="fas fa-lock-open"></i>' +
+              '<span>Reabrir Radicado</span>' +
+            '</button>';
+        }
+      }
+
+      if (isTecnicoOContratista) {
+        if (!estaCerrado) {
+          tiles +=
+            '<button type="button" class="action-tile tile-close" onclick="ejecutarAccionDesdeModal(\'cerrar\')">' +
+              '<i class="fas fa-check-circle"></i>' +
+              '<span>Cerrar Radicado</span>' +
+            '</button>';
+        }
+        tiles +=
+          '<button type="button" class="action-tile tile-tracking" onclick="ejecutarAccionDesdeModal(\'seguimiento\')">' +
+            '<i class="fas fa-box-open"></i>' +
+            '<span>Ver Servicio</span>' +
+          '</button>' +
+          '<button type="button" class="action-tile tile-pdf" onclick="ejecutarAccionDesdeModal(\'informe\')">' +
+            '<i class="fas fa-file-pdf"></i>' +
+            '<span>Informe / Acta PDF</span>' +
+          '</button>';
+      }
+
+      document.getElementById('modalAccionesGrid').innerHTML = tiles;
+      document.getElementById('modalAcciones').classList.add('active');
+    }
+
+    function ejecutarAccionDesdeModal(accion) {
+      var fila = selectedFila;
+      var rad = selectedRadicado;
+      cerrarModal('modalAcciones');
+
+      if (accion === 'asignar') return abrirModalAsignar(fila, rad);
+      if (accion === 'proveedor') return abrirModalProveedor(fila, rad);
+      if (accion === 'seguimiento') return abrirModalSeguimiento(fila, rad);
+      if (accion === 'informe') return abrirModalInforme(fila, rad);
+      if (accion === 'cerrar') return abrirModalCerrar(fila, rad);
+      if (accion === 'reabrir') return reabrirRadicadoJS(fila, rad);
     }
     
     function filterTableDebounced() {
@@ -1544,17 +1802,17 @@
       var info = '<div style="margin-bottom:8px;"><b><i class="fas fa-hashtag"></i> Radicado:</b> ' + escapeHtml(item.radicado) + '</div>';
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-calendar-alt"></i> Fecha de Servicio:</b> ' + escapeHtml(item.fecha || '—') + '</div>';
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-store"></i> Tienda:</b> ' + escapeHtml(item.tienda) + '</div>';
-      info += '<div style="margin-bottom:10px; padding:10px; background:#FFFFFF; border-left:4px solid var(--secondary); border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.05);"><b><i class="fas fa-tools"></i> Descripción del Servicio:</b><br><span style="color:var(--text-primary); font-size:13px; font-weight:500;">' + escapeHtml(item.servicio) + '</span></div>';
+      info += '<div style="margin-bottom:10px; padding:10px; background:rgba(255,255,255,0.85); border-left:4px solid var(--secondary); border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.05);"><b><i class="fas fa-tools"></i> Descripción del Servicio:</b><br><span style="color:var(--text-primary); font-size:13px; font-weight:500;">' + escapeHtml(item.servicio) + '</span></div>';
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-user-gear"></i> Técnico / Contratista:</b> <span style="color:var(--secondary); font-weight:600;">' + escapeHtml(valTecnico || '—') + '</span></div>';
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-info-circle"></i> Estado del radicado:</b> <span class="estado-badge ' + getEstadoClass(item.estado) + '">' + escapeHtml(item.estado) + '</span></div>';
-      info += '<div style="margin-bottom:8px; padding-top:6px; border-top:1px solid var(--border);"><b><i class="fas fa-lock"></i> Estado de cierre:</b> <span style="color:' + colorCierre + '; font-weight:700;">' + escapeHtml(item.cierre || 'PENDIENTE') + '</span></div>';
+      info += '<div style="margin-bottom:8px; padding-top:6px; border-top:1px solid rgba(203,213,225,0.75);"><b><i class="fas fa-lock"></i> Estado de cierre:</b> <span style="color:' + colorCierre + '; font-weight:700;">' + escapeHtml(item.cierre || 'PENDIENTE') + '</span></div>';
       info += '<div style="margin-bottom:8px;"><b><i class="fas fa-calendar-check"></i> Fecha de cierre:</b> <span style="color:var(--text-secondary);">' + escapeHtml(item.fechaCierre || 'Sin registrar') + '</span></div>';
 
       var listaMateriales = Array.isArray(item.materialesDetalle) ? item.materialesDetalle : [];
       var itemsRequisicion = listaMateriales.filter(function(m) { return m.enRequisicion; });
       var itemsPendientes = listaMateriales.filter(function(m) { return !m.enRequisicion; });
 
-      info += '<div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--border);">';
+      info += '<div style="margin-top:10px; padding-top:8px; border-top:1px solid rgba(203,213,225,0.75);">';
       info += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">';
       info += '<b><i class="fas fa-boxes-stacked"></i> Materiales Abiertos (Elige cuál cerrar):</b>';
       if (listaMateriales.length > 0) {
@@ -1563,7 +1821,7 @@
       info += '</div>';
 
       if (listaMateriales.length === 0) {
-        info += '<div style="padding:8px; background:#FFFFFF; border:1px dashed var(--border); border-radius:6px; color:var(--text-muted); font-size:11px; text-align:center;">Sin materiales pendientes en requisición</div>';
+        info += '<div style="padding:8px; background:rgba(255,255,255,0.78); border:1px dashed rgba(148,163,184,0.8); border-radius:6px; color:var(--text-muted); font-size:11px; text-align:center;">Sin materiales pendientes en requisición</div>';
       } else {
         for (var idx = 0; idx < listaMateriales.length; idx++) {
           var matItem = listaMateriales[idx];
@@ -1572,7 +1830,7 @@
             ? '<span style="font-size:9px; background:#E0F2FE; color:#0284C7; padding:1px 6px; border-radius:8px; font-weight:700;">En Requisición</span>'
             : '<span style="font-size:9px; background:#FEF3C7; color:#B45309; padding:1px 6px; border-radius:8px; font-weight:700;">Pendiente Proveedor</span>';
 
-          info += '<div style="background:#FFFFFF; border:1px solid var(--border); border-left:3px solid ' + borderColor + '; border-radius:6px; padding:8px 10px; margin-bottom:6px;">';
+          info += '<div style="background:rgba(255,255,255,0.85); border:1px solid rgba(203,213,225,0.75); border-left:3px solid ' + borderColor + '; border-radius:6px; padding:8px 10px; margin-bottom:6px;">';
           info += '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-bottom:4px;">';
           info += '<div style="font-size:12px; color:var(--text-primary); font-weight:500;">' + escapeHtml(matItem.material) + '</div>';
           info += badgeEstado;
@@ -1724,7 +1982,7 @@
       document.getElementById('infRadicado').value = radicado || '';
       document.getElementById('infServicio').value = item.servicio || '';
       document.getElementById('infDetalleRealizado').value = '';
-      inicializarInventarioInforme(item.materiales && item.materiales !== 'Sin materiales pendientes en requisición' ? item.materiales : '');
+      inicializarInventarioInforme('');
       document.getElementById('infEnviarCorreo').checked = false;
 
       [1, 2, 3, 4].forEach(function(n) { limpiarSlotEvidencia(n); });
